@@ -1,6 +1,7 @@
 ﻿using Crow.Extensions;
 using Crow.Logging.Formatting;
 using Crow.Logging.Formatting.Formatters;
+using Crow.Logging.Outputs;
 using Pastel;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,9 @@ namespace Crow.Logging
     public class Logger : ILogger
     {
         public string Scope { get; set; }
+        public List<IOutput> Outputs { get; } = new List<IOutput>() { new ConsoleOutput() };
 
-        private object _lock = new object();
+        private object lck = new object();
 
         private int biggestLength = 0;
 
@@ -42,45 +44,56 @@ namespace Crow.Logging
 
         public void Log(string loglevel, string content, string scope = "")
         {
-            lock(_lock)
-            {
                 string _scope = String.IsNullOrWhiteSpace(scope) ? Scope : scope;
 
-                if (String.IsNullOrWhiteSpace(_scope))
+            if (String.IsNullOrWhiteSpace(_scope))
+            {
+                if (!String.IsNullOrWhiteSpace(loglevel))
                 {
-                    if (!String.IsNullOrWhiteSpace(loglevel))
+                    foreach (var logLevel in logLevels)
                     {
-                        foreach (var logLevel in logLevels)
+                        if (logLevel.Name.ToLower() == loglevel.ToLower())
                         {
-                            if (logLevel.Name.ToLower() == loglevel.ToLower())
+                            foreach (var output in Outputs)
                             {
-                                Console.WriteLine($"{logLevel.Icon.Pastel(logLevel.Color)} {ANSI.Underline(logLevel.Name.Expand(biggestLength)).Pastel(logLevel.Color)} {content.Pastel(Color.LightGray)}");
-                                break;
+                                output.WriteLine($"{logLevel.Icon.Pastel(logLevel.Color)} { ANSI.Underline(logLevel.Name.Expand(biggestLength)).Pastel(logLevel.Color)} {content.Pastel(Color.LightGray) }");
                             }
+
+                            break;
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"{"".Expand(biggestLength + 2)} {content.Pastel(Color.Gray)}");
                     }
                 }
                 else
                 {
-
-                    if (!String.IsNullOrWhiteSpace(loglevel))
+                    foreach (var output in Outputs)
                     {
-                        foreach (var logLevel in logLevels)
+                        output.WriteLine($"{"".Expand(biggestLength + 2)} { content.Pastel(Color.Gray) }");
+                    }
+                }
+            }
+            else
+            {
+
+                if (!String.IsNullOrWhiteSpace(loglevel))
+                {
+                    foreach (var logLevel in logLevels)
+                    {
+                        if (logLevel.Name.ToLower() == loglevel.ToLower())
                         {
-                            if (logLevel.Name.ToLower() == loglevel.ToLower())
+                            foreach (var output in Outputs)
                             {
-                                Console.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {logLevel.Icon.Pastel(logLevel.Color)} { ANSI.Underline(logLevel.Name).Pastel(logLevel.Color).Expand(biggestLength) } {content.Pastel(Color.LightGray)}");
-                                break;
+                                output.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {logLevel.Icon.Pastel(logLevel.Color)} { ANSI.Underline(logLevel.Name).Pastel(logLevel.Color).Expand(biggestLength) } {content.Pastel(Color.LightGray)}");
                             }
+
+                            break;
                         }
                     }
-                    else
+                }
+                else
+                {
+                    foreach (var output in Outputs)
                     {
-                        Console.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {"".Expand(biggestLength + 2)} {content.Pastel(Color.LightGray)}");
+                        output.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {"".Expand(biggestLength + 2)} { content.Pastel(Color.LightGray) }");
                     }
                 }
             }
