@@ -35,6 +35,7 @@ namespace Crow.Logging
 
             formatters.Add(new ExceptionFormatter(this));
             formatters.Add(new IListFormatter(this));
+            formatters.Add(new IDictionaryFormatter(this));
 
             foreach (var logLevel in logLevels)
             {
