@@ -86,62 +86,66 @@ namespace Crow.Logging
             lock (_exceptionLock)
             {
                 var type = exception.GetType();
-                List<string> lines = new List<string>(exception.StackTrace.Split(Environment.NewLine));
-
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    if (lines[i].StartsWith("   at "))
-                    {
-                        var path = lines[i].Substring(6, lines[i].IndexOf('(') - 6).Split('.');
-
-                        for (int j = 0; j < path.Length; j++)
-                            path[j] = path[j].Pastel(Color.Gray);
-
-                        int openingBracketIndex = lines[i].IndexOf('(');
-                        int closingBracketIndex = lines[i].IndexOf(')');
-
-                        if (openingBracketIndex < closingBracketIndex - 1)
-                        {
-                            var args = lines[i].Substring(openingBracketIndex + 1, lines[i].Length - (openingBracketIndex + 2)).Split(',');
-
-                            for (int j = 0; j < args.Length; j++)
-                            {
-                                var args2 = args[j].Trim().Split(' ');
-
-                                args[j] = $"{args2[0].Pastel(Color.Gray)} {ANSI.Bold(args2[1])}";
-                            }
-
-                            lines[i] = "at ".Pastel(Color.Gray) + String.Join('.', path) + $"({String.Join(", ", args)})";
-                        }
-                        else
-                        {
-                            lines[i] = "at ".Pastel(Color.Gray) + String.Join('.', path) + lines[i].Substring(openingBracketIndex, lines[i].Length - openingBracketIndex);
-                        }
-
-                        if (lines[i].Contains(" in "))
-                        {
-                            int index = lines[i].IndexOf(" in ");
-                            lines.Insert(i + 1, "    in".Pastel(Color.Gray) + lines[i].Substring(index, lines[i].Length - (index)).Substring(3));
-
-                            int lineIndex = lines[i + 1].IndexOf("line ");
-                            lines.Insert(i + 2, "        at ".Pastel(Color.Gray) + lines[i + 1].Substring(lineIndex));
-                            lines[i + 1] = lines[i + 1].Substring(0, lineIndex - 1);
-                            lines[i] = lines[i].Substring(0, index);
-
-                            i += 2;
-                        }
-                    }
-                }
 
                 Log("error", $"{type.Name.Pastel(Color.Gray)}: {exception.Message.Replace(Environment.NewLine, " ")}", scope);
 
-                for (int i = 0; i < lines.Count; i++)
+                if(exception.StackTrace != null)
                 {
-                    if (i > 0)
-                        Log("", "  " + lines[i], scope);
-                    else
-                        Log("stacktrace", lines[i], scope);
-                };
+                    List<string> lines = new List<string>(exception.StackTrace.Contains(Environment.NewLine) ? exception.StackTrace.Split(Environment.NewLine) : new[] { exception.StackTrace });
+
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i].StartsWith("   at "))
+                        {
+                            var path = lines[i].Substring(6, lines[i].IndexOf('(') - 6).Split('.');
+
+                            for (int j = 0; j < path.Length; j++)
+                                path[j] = path[j].Pastel(Color.Gray);
+
+                            int openingBracketIndex = lines[i].IndexOf('(');
+                            int closingBracketIndex = lines[i].IndexOf(')');
+
+                            if (openingBracketIndex < closingBracketIndex - 1)
+                            {
+                                var args = lines[i].Substring(openingBracketIndex + 1, lines[i].Length - (openingBracketIndex + 2)).Split(',');
+
+                                for (int j = 0; j < args.Length; j++)
+                                {
+                                    var args2 = args[j].Trim().Split(' ');
+
+                                    args[j] = $"{args2[0].Pastel(Color.Gray)} {ANSI.Bold(args2[1])}";
+                                }
+
+                                lines[i] = "at ".Pastel(Color.Gray) + String.Join('.', path) + $"({String.Join(", ", args)})";
+                            }
+                            else
+                            {
+                                lines[i] = "at ".Pastel(Color.Gray) + String.Join('.', path) + lines[i].Substring(openingBracketIndex, lines[i].Length - openingBracketIndex);
+                            }
+
+                            if (lines[i].Contains(" in "))
+                            {
+                                int index = lines[i].IndexOf(" in ");
+                                lines.Insert(i + 1, "    in".Pastel(Color.Gray) + lines[i].Substring(index, lines[i].Length - (index)).Substring(3));
+
+                                int lineIndex = lines[i + 1].IndexOf("line ");
+                                lines.Insert(i + 2, "        at ".Pastel(Color.Gray) + lines[i + 1].Substring(lineIndex));
+                                lines[i + 1] = lines[i + 1].Substring(0, lineIndex - 1);
+                                lines[i] = lines[i].Substring(0, index);
+
+                                i += 2;
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (i > 0)
+                            Log("", "  " + lines[i], scope);
+                        else
+                            Log("stacktrace", lines[i], scope);
+                    };
+                }
             }
         }
     }
