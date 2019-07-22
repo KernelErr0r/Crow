@@ -34,6 +34,7 @@ namespace Crow.Logging
             Scope = scope;
 
             formatters.Add(new ExceptionFormatter(this));
+            formatters.Add(new IListFormatter(this));
 
             foreach (var logLevel in logLevels)
             {
@@ -102,6 +103,7 @@ namespace Crow.Logging
         public void Log(string loglevel, object input, string scope = "")
         {
             var inputType = input.GetType();
+            var inputInterfaces = inputType.GetInterfaces();
 
             foreach(var formatter in formatters)
             {
@@ -112,15 +114,23 @@ namespace Crow.Logging
                 {
                     if(interfac.IsGenericType)
                     {
-                        var genericArguments = interfac.GetGenericArguments();
+                        var genericArgument = interfac.GetGenericArguments()[0];
 
-                        foreach(var argument in genericArguments)
+                        if(genericArgument == inputType)
                         {
-                            if(argument == inputType)
-                            {
-                                formatter.Format(input);
+                            formatter.Format(loglevel, input);
 
-                                return;
+                            return;
+                        } else
+                        {
+                            foreach(var inputInterface in inputInterfaces)
+                            {
+                                if(genericArgument == inputInterface)
+                                {
+                                    formatter.Format(loglevel, input);
+
+                                    return;
+                                }
                             }
                         }
                     }
