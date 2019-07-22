@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text.RegularExpressions;
 
 namespace Crow.Logging
 {
@@ -12,8 +11,6 @@ namespace Crow.Logging
 
         private object _lock = new object();
         private object _exceptionLock = new object();
-
-        private Regex ansiEscapeCodeRegex = new Regex(@"\x1B\[[^@-~]*[@-~]");
 
         private int biggestLength = 0;
 
@@ -149,7 +146,7 @@ namespace Crow.Logging
 
         private string Extend(string str, int length)
         {
-            int strLength = ansiEscapeCodeRegex.Replace(str, "").Length;
+            int strLength = ANSI.Strip(str).Length;
 
             while (strLength < length)
             {
