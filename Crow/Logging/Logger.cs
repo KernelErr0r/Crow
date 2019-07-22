@@ -1,4 +1,5 @@
-﻿using Pastel;
+﻿using Crow.Extensions;
+using Pastel;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -48,14 +49,14 @@ namespace Crow.Logging
                         {
                             if (logLevel.Name.ToLower() == loglevel.ToLower())
                             {
-                                Console.WriteLine($"{logLevel.Icon.Pastel(logLevel.Color)} {ANSI.Underline(Extend(logLevel.Name, biggestLength)).Pastel(logLevel.Color)} {content.Pastel(Color.LightGray)}");
+                                Console.WriteLine($"{logLevel.Icon.Pastel(logLevel.Color)} {ANSI.Underline(logLevel.Name.Expand(biggestLength)).Pastel(logLevel.Color)} {content.Pastel(Color.LightGray)}");
                                 break;
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"{Extend("", biggestLength + 2)} {content.Pastel(Color.Gray)}");
+                        Console.WriteLine($"{"".Expand(biggestLength + 2)} {content.Pastel(Color.Gray)}");
                     }
                 }
                 else
@@ -67,14 +68,14 @@ namespace Crow.Logging
                         {
                             if (logLevel.Name.ToLower() == loglevel.ToLower())
                             {
-                                Console.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {logLevel.Icon.Pastel(logLevel.Color)} { Extend(ANSI.Underline(logLevel.Name).Pastel(logLevel.Color), biggestLength) } {content.Pastel(Color.LightGray)}");
+                                Console.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {logLevel.Icon.Pastel(logLevel.Color)} { ANSI.Underline(logLevel.Name).Pastel(logLevel.Color).Expand(biggestLength) } {content.Pastel(Color.LightGray)}");
                                 break;
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {Extend("", biggestLength + 2)} {content.Pastel(Color.LightGray)}");
+                        Console.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {"".Expand(biggestLength + 2)} {content.Pastel(Color.LightGray)}");
                     }
                 }
             }
@@ -142,19 +143,6 @@ namespace Crow.Logging
                         Log("stacktrace", lines[i], scope);
                 };
             }
-        }
-
-        private string Extend(string str, int length)
-        {
-            int strLength = ANSI.Strip(str).Length;
-
-            while (strLength < length)
-            {
-                str += ' ';
-                strLength++;
-            }
-
-            return str;
         }
     }
 }
