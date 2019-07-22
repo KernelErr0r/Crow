@@ -2,7 +2,7 @@
 {
     public interface IFormatter
     {
-        void Format(object input);
+        void Format(string loglevel, object input);
     }
 
     public interface IFormatter<T> : IFormatter { }

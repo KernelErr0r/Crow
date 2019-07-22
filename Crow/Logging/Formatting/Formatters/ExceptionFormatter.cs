@@ -15,7 +15,7 @@ namespace Crow.Logging.Formatting.Formatters
             _logger = logger;
         }
 
-        public void Format(object input)
+        public void Format(string loglevel, object input)
         {
             lock (_exceptionLock)
             {
@@ -23,7 +23,7 @@ namespace Crow.Logging.Formatting.Formatters
 
                 var type = exception.GetType();
 
-                _logger.Log("error", $"{type.Name.Pastel(Color.Gray)}: {exception.Message.Replace(Environment.NewLine, " ")}", _logger.Scope);
+                _logger.Log(loglevel, $"{type.Name.Pastel(Color.Gray)}: {exception.Message.Replace(Environment.NewLine, " ")}", _logger.Scope);
 
                 if (exception.StackTrace != null)
                 {
