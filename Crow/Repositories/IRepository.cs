@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Crow.Dependencies;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Crow.Repositories
@@ -6,7 +7,7 @@ namespace Crow.Repositories
     public interface IRepository
     {
         string Name { get; }
-        List<IRepository> GetDependenciesByName(string name);
-        Task<List<IRepository>> GetDependenciesByNameAsync(string name);
+        List<IDependency> GetDependenciesByName(string name);
+        Task<List<IDependency>> GetDependenciesByNameAsync(string name);
     }
 }
