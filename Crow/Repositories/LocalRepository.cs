@@ -7,15 +7,23 @@ namespace Crow.Repositories
 {
     class LocalRepository : IRepository
     {
-        public string Name => Path.GetDirectoryName(path);
+        public string Name
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(name) ? Path.GetDirectoryName(path) : name;
+            }
+        }
 
+        private string name;
         private string path;
 
-        public LocalRepository(string path)
+        public LocalRepository(string path, string name = "")
         {
             if(Directory.Exists(path))
             {
                 this.path = path;
+                this.name = name;
             } else
             {
                 throw new DirectoryNotFoundException(path);
