@@ -2,6 +2,6 @@
 {
     class Program
     {
-        static void Main(string[] args) => new Crow().Start();
+        static void Main(string[] args) => new Crow().Start(args);
     }
 }
