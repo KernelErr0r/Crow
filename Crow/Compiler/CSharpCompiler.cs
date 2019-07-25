@@ -33,9 +33,17 @@ namespace Crow.Compiler
                 {
                     var result = compilation.Emit(memoryStream);
 
-                    using(var streamWriter = new StreamWriter(output))
+                    if(result.Success)
                     {
-                        streamWriter.Write(memoryStream.ToArray());
+                        using (var streamWriter = new StreamWriter(output))
+                        {
+                            streamWriter.Write(memoryStream.ToArray());
+                        }
+
+                        Finished?.Invoke(this, 0);
+                    } else
+                    {
+                        Finished?.Invoke(this, 1);
                     }
                 }
             } else
