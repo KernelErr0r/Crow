@@ -1,4 +1,5 @@
-﻿using Crow.Dependencies;
+﻿using Crow.Compiler;
+using Crow.Dependencies;
 using Crow.Logging;
 using Crow.Repositories;
 using Jint;
@@ -15,7 +16,7 @@ namespace Crow
 
         private List<IRepository> repositories = new List<IRepository>();
         private List<IDependency> dependencies = new List<IDependency>();
-        private List<Tuple<Compiler.Compiler, string>> compilers = new List<Tuple<Compiler.Compiler, string>>();
+        private List<Tuple<ICompiler, string>> compilers = new List<Tuple<ICompiler, string>>();
 
         public Crow()
         {
@@ -29,8 +30,10 @@ namespace Crow
             Action<string, string, string> addCompiler = (extension, arguments, executable) => AddCompiler(extension, arguments, executable);
             Action<string, string> addLocalRepository = (name, path) => AddLocalRepository(name, path);
             Action<string, string> addLocalDependency = (repository, dependency) => AddLocalDependency(repository, dependency);
+            Action addCSharpCompiler = () => AddCSharpCompiler();
 
             engine.SetValue("addCompiler", addCompiler);
+            engine.SetValue("addCSharpCompiler", addCSharpCompiler);
             engine.SetValue("addLocalRepository", addLocalRepository);
             engine.SetValue("addLocalDependency", addLocalDependency);
         }
@@ -69,11 +72,16 @@ namespace Crow
         {
             if(File.Exists(executable))
             {
-                compilers.Add(new Tuple<Compiler.Compiler, string>(new Compiler.Compiler(executable, arguments), fileExtension));
+                compilers.Add(new Tuple<ICompiler, string>(new CustomCompiler(executable, arguments), fileExtension));
             } else
             {
                 throw new FileNotFoundException(executable);
             }
+        }
+
+        private void AddCSharpCompiler()
+        {
+            compilers.Add(new Tuple<ICompiler, string>(new CSharpCompiler(), ".cs"));
         }
 
         private void AddLocalRepository(string name, string path)
