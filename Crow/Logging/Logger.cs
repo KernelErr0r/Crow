@@ -46,7 +46,7 @@ namespace Crow.Logging
 
         public void Log(string loglevel, string content, string scope = "")
         {
-                string _scope = String.IsNullOrWhiteSpace(scope) ? Scope : scope;
+            string _scope = String.IsNullOrWhiteSpace(scope) ? Scope : scope;
 
             if (String.IsNullOrWhiteSpace(_scope))
             {
@@ -106,27 +106,28 @@ namespace Crow.Logging
             var inputType = input.GetType();
             var inputInterfaces = inputType.GetInterfaces();
 
-            foreach(var formatter in formatters)
+            foreach (var formatter in formatters)
             {
                 var formatterType = formatter.GetType();
                 var interfaces = formatterType.GetInterfaces();
 
-                foreach(var interfac in interfaces)
+                foreach (var interfac in interfaces)
                 {
-                    if(interfac.IsGenericType)
+                    if (interfac.IsGenericType)
                     {
                         var genericArgument = interfac.GetGenericArguments()[0];
 
-                        if(genericArgument == inputType)
+                        if (genericArgument == inputType)
                         {
                             formatter.Format(loglevel, input);
 
                             return;
-                        } else
+                        }
+                        else
                         {
-                            foreach(var inputInterface in inputInterfaces)
+                            foreach (var inputInterface in inputInterfaces)
                             {
-                                if(genericArgument == inputInterface)
+                                if (genericArgument == inputInterface)
                                 {
                                     formatter.Format(loglevel, input);
 

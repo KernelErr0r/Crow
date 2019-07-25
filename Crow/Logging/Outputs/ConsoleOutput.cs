@@ -8,7 +8,7 @@ namespace Crow.Logging.Outputs
 
         public void WriteLine(string input)
         {
-            lock(lck)
+            lock (lck)
             {
                 Console.WriteLine(input);
             }

@@ -9,10 +9,11 @@ namespace Crow.Logging.Outputs
 
         public FileOutput(string file)
         {
-            if(File.Exists(file))
+            if (File.Exists(file))
             {
                 streamWriter = new StreamWriter(file);
-            } else
+            }
+            else
             {
                 throw new FileNotFoundException();
             }
@@ -20,7 +21,7 @@ namespace Crow.Logging.Outputs
 
         public void WriteLine(string input)
         {
-            lock(lck)
+            lock (lck)
             {
                 streamWriter.WriteLine(input);
             }

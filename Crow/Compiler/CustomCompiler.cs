@@ -16,15 +16,17 @@ namespace Crow.Compiler
 
         public CustomCompiler(string filePath, string arguments)
         {
-            if(File.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 this.filePath = filePath;
                 this.arguments = arguments;
 
-                process.Exited += (sender, args) => {
+                process.Exited += (sender, args) =>
+                {
                     Finished?.Invoke(this, process.ExitCode);
                 };
-            } else
+            }
+            else
             {
                 throw new FileNotFoundException(filePath);
             }

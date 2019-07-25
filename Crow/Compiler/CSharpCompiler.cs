@@ -12,28 +12,28 @@ namespace Crow.Compiler
 
         public void Compile(string output, string[] source, string[] libraries)
         {
-            if(source.Length > 0)
+            if (source.Length > 0)
             {
                 var syntaxTrees = new List<SyntaxTree>();
                 var references = new List<MetadataReference>();
 
-                foreach(var file in source)
+                foreach (var file in source)
                 {
                     syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(file)));
                 }
 
-                foreach(var library in libraries)
+                foreach (var library in libraries)
                 {
                     references.Add(MetadataReference.CreateFromFile(library));
                 }
 
                 var compilation = CSharpCompilation.Create(output, syntaxTrees, references);
 
-                using(var memoryStream = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
                     var result = compilation.Emit(memoryStream);
 
-                    if(result.Success)
+                    if (result.Success)
                     {
                         using (var streamWriter = new StreamWriter(output))
                         {
@@ -41,12 +41,14 @@ namespace Crow.Compiler
                         }
 
                         Finished?.Invoke(this, 0);
-                    } else
+                    }
+                    else
                     {
                         Finished?.Invoke(this, 1);
                     }
                 }
-            } else
+            }
+            else
             {
                 throw new Exception();
             }

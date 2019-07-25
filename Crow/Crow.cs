@@ -64,7 +64,8 @@ namespace Crow
                 {
                     logger.Log("Error", "Incorrect usage");
                 }
-            } catch(Exception exception)
+            }
+            catch (Exception exception)
             {
                 logger.Log("Error", exception);
             }
@@ -72,10 +73,11 @@ namespace Crow
 
         private void AddCompiler(string fileExtension, string arguments, string executable)
         {
-            if(File.Exists(executable))
+            if (File.Exists(executable))
             {
                 compilers.Add(new Tuple<ICompiler, string>(new CustomCompiler(executable, arguments), fileExtension));
-            } else
+            }
+            else
             {
                 throw new FileNotFoundException(executable);
             }

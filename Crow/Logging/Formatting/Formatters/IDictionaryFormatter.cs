@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace Crow.Logging.Formatting.Formatters
@@ -10,7 +9,7 @@ namespace Crow.Logging.Formatting.Formatters
 
         public IDictionaryFormatter(ILogger logger)
         {
-            _logger = logger;;
+            _logger = logger; ;
         }
 
         public void Format(string loglevel, object input)

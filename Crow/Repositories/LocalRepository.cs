@@ -20,11 +20,12 @@ namespace Crow.Repositories
 
         public LocalRepository(string path, string name = "")
         {
-            if(Directory.Exists(path))
+            if (Directory.Exists(path))
             {
                 this.path = path;
                 this.name = name;
-            } else
+            }
+            else
             {
                 throw new DirectoryNotFoundException(path);
             }
@@ -34,9 +35,9 @@ namespace Crow.Repositories
         {
             var list = new List<IDependency>();
 
-            foreach(var file in Directory.GetFiles(path))
+            foreach (var file in Directory.GetFiles(path))
             {
-                if(file.StartsWith(name + "."))
+                if (file.StartsWith(name + "."))
                 {
                     list.Add(new LocalDependency(file, Name));
                 }
