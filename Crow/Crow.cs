@@ -31,9 +31,11 @@ namespace Crow
             Action<string, string> addLocalRepository = (name, path) => AddLocalRepository(name, path);
             Action<string, string> addLocalDependency = (repository, dependency) => AddLocalDependency(repository, dependency);
             Action addCSharpCompiler = () => AddCSharpCompiler();
+            Action addVisualBasicCompiler = () => AddVisualBasicCompiler();
 
             engine.SetValue("addCompiler", addCompiler);
             engine.SetValue("addCSharpCompiler", addCSharpCompiler);
+            engine.SetValue("addVisualBasicCompiler", addVisualBasicCompiler);
             engine.SetValue("addLocalRepository", addLocalRepository);
             engine.SetValue("addLocalDependency", addLocalDependency);
         }
@@ -82,6 +84,11 @@ namespace Crow
         private void AddCSharpCompiler()
         {
             compilers.Add(new Tuple<ICompiler, string>(new CSharpCompiler(), ".cs"));
+        }
+
+        private void AddVisualBasicCompiler()
+        {
+            compilers.Add(new Tuple<ICompiler, string>(new VisualBasicCompiler(), ".vb"));
         }
 
         private void AddLocalRepository(string name, string path)
