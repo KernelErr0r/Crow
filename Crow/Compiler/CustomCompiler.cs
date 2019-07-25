@@ -4,15 +4,17 @@ using System.IO;
 
 namespace Crow.Compiler
 {
-    public class Compiler
+    public class CustomCompiler : ICompiler
     {
+        public event EventHandler<int> Finished;
+
+        public char Separator { get; set; } = ' ';
+
         private Process process = new Process();
         private string filePath;
         private string arguments;
 
-        public event EventHandler<int> Finished;
-
-        public Compiler(string filePath, string arguments)
+        public CustomCompiler(string filePath, string arguments)
         {
             if(File.Exists(filePath))
             {
@@ -28,12 +30,12 @@ namespace Crow.Compiler
             }
         }
 
-        public void Compile(string[] files)
+        public void Compile(string output, string[] files, string[] libraries)
         {
             var processStartInfo = new ProcessStartInfo()
             {
                 FileName = filePath,
-                Arguments = arguments.Replace("{0}", String.Join(' ', files))
+                Arguments = String.Format(arguments, output, String.Join(' ', files), String.Join(' ', libraries))
             };
 
             process.StartInfo = processStartInfo;
