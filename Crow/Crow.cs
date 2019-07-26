@@ -1,4 +1,5 @@
-﻿using Crow.Compiler;
+﻿using Crow.Commands;
+using Crow.Compiler;
 using Crow.Dependencies;
 using Crow.Logging;
 using Crow.Repositories;
@@ -11,8 +12,12 @@ namespace Crow
 {
     public class Crow
     {
+        public static Crow Instance { get; private set; }
+
+        internal Engine engine;
+
+        private CommandManager commandManager = new CommandManager();
         private ILogger logger = new Logger("Crow");
-        private Engine engine;
 
         private List<IRepository> repositories = new List<IRepository>();
         private List<IDependency> dependencies = new List<IDependency>();
@@ -20,6 +25,8 @@ namespace Crow
 
         public Crow()
         {
+            Instance = this;
+
             engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
             {
                 logger.Log("Error", exception);
