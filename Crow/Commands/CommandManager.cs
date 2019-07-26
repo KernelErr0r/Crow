@@ -9,21 +9,17 @@ namespace Crow.Commands
 
         private List<ICommand> commands = new List<ICommand>();
 
-        public void Register(ICommand command)
-        {
+        public void Register(ICommand command) =>
             commands.Add(command);
-        }
 
-        public void Unregister(ICommand command)
-        {
+        public void Unregister(ICommand command) =>
             commands.Remove(command);
-        }
 
         public void Invoke(string name, params string[] arguments)
         {
-            foreach(var command in commands)
+            foreach (var command in commands)
             {
-                if(command.Name.ToLower() == name.ToLower())
+                if (command.Name.ToLower() == name.ToLower())
                 {
                     command.Invoke(arguments);
 

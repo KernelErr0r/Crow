@@ -11,9 +11,9 @@ namespace Crow.Commands
 
         public void Invoke(params string[] arguments)
         {
-            if(arguments.Length > 0)
+            if (arguments.Length > 0)
             {
-                if(File.Exists(arguments[0]))
+                if (File.Exists(arguments[0]))
                 {
                     Crow.Instance.engine = Crow.Instance.engine.Execute(File.ReadAllText(arguments[0]));
 
@@ -21,7 +21,8 @@ namespace Crow.Commands
                     var build = Crow.Instance.engine.GetValue("build");
 
                     configure.Invoke();
-                } else
+                }
+                else
                 {
                     throw new FileNotFoundException(arguments[0]);
                 }

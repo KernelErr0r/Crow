@@ -37,13 +37,7 @@ namespace Crow
             {
                 if (args.Length > 0)
                 {
-                    if(args.Length == 1)
-                    {
-                        commandManager.Invoke(args[0], null);
-                    } else
-                    {
-                        commandManager.Invoke(args[0], args.Skip(1).ToArray());
-                    }
+                    commandManager.Invoke(args[0], args.Length == 1 ? null : args.Skip(1).ToArray());
                 }
                 else
                 {
@@ -90,24 +84,16 @@ namespace Crow
             }
         }
 
-        private void AddCSharpCompiler()
-        {
+        private void AddCSharpCompiler() =>
             compilers.Add(new Tuple<ICompiler, string>(new CSharpCompiler(), ".cs"));
-        }
 
-        private void AddVisualBasicCompiler()
-        {
+        private void AddVisualBasicCompiler() =>
             compilers.Add(new Tuple<ICompiler, string>(new VisualBasicCompiler(), ".vb"));
-        }
 
-        private void AddLocalRepository(string name, string path)
-        {
+        private void AddLocalRepository(string name, string path) =>
             repositories.Add(new LocalRepository(path, name));
-        }
 
-        private void AddLocalDependency(string repository, string dependency)
-        {
+        private void AddLocalDependency(string repository, string dependency) =>
             dependencies.Add(new LocalDependency(dependency, repository));
-        }
     }
 }
