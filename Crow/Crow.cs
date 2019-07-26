@@ -7,6 +7,7 @@ using Jint;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Crow
 {
@@ -36,18 +37,12 @@ namespace Crow
             {
                 if (args.Length > 0)
                 {
-                    if (File.Exists(args[0]))
+                    if(args.Length == 1)
                     {
-                        engine = engine.Execute(File.ReadAllText(args[0]));
-
-                        var configure = engine.GetValue("configure");
-                        var build = engine.GetValue("build");
-
-                        configure.Invoke();
-                    }
-                    else
+                        commandManager.Invoke(args[0], null);
+                    } else
                     {
-                        logger.Log("Error", "File doesn't exist");
+                        commandManager.Invoke(args[0], args.Skip(1).ToArray());
                     }
                 }
                 else
