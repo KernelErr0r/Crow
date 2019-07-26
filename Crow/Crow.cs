@@ -27,24 +27,7 @@ namespace Crow
         {
             Instance = this;
 
-            engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
-            {
-                logger.Log("Error", exception);
-
-                return true;
-            }));
-
-            Action<string, string, string> addCompiler = (extension, arguments, executable) => AddCompiler(extension, arguments, executable);
-            Action<string, string> addLocalRepository = (name, path) => AddLocalRepository(name, path);
-            Action<string, string> addLocalDependency = (repository, dependency) => AddLocalDependency(repository, dependency);
-            Action addCSharpCompiler = () => AddCSharpCompiler();
-            Action addVisualBasicCompiler = () => AddVisualBasicCompiler();
-
-            engine.SetValue("addCompiler", addCompiler);
-            engine.SetValue("addCSharpCompiler", addCSharpCompiler);
-            engine.SetValue("addVisualBasicCompiler", addVisualBasicCompiler);
-            engine.SetValue("addLocalRepository", addLocalRepository);
-            engine.SetValue("addLocalDependency", addLocalDependency);
+            InitializeEngine();
         }
 
         public void Start(string[] args)
@@ -76,6 +59,28 @@ namespace Crow
             {
                 logger.Log("Error", exception);
             }
+        }
+
+        private void InitializeEngine()
+        {
+            engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
+            {
+                logger.Log("Error", exception);
+
+                return true;
+            }));
+
+            Action<string, string, string> addCompiler = (extension, arguments, executable) => AddCompiler(extension, arguments, executable);
+            Action<string, string> addLocalRepository = (name, path) => AddLocalRepository(name, path);
+            Action<string, string> addLocalDependency = (repository, dependency) => AddLocalDependency(repository, dependency);
+            Action addCSharpCompiler = () => AddCSharpCompiler();
+            Action addVisualBasicCompiler = () => AddVisualBasicCompiler();
+
+            engine.SetValue("addCompiler", addCompiler);
+            engine.SetValue("addCSharpCompiler", addCSharpCompiler);
+            engine.SetValue("addVisualBasicCompiler", addVisualBasicCompiler);
+            engine.SetValue("addLocalRepository", addLocalRepository);
+            engine.SetValue("addLocalDependency", addLocalDependency);
         }
 
         private void AddCompiler(string fileExtension, string arguments, string executable)
