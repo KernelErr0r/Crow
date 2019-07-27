@@ -3,20 +3,18 @@ using Crow.Logging.Formatting;
 using Crow.Logging.Formatting.Formatters;
 using Crow.Logging.Outputs;
 using Pastel;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Crow.Logging
 {
     public class Logger : ILogger
     {
-        public string Scope { get; set; }
         public List<IOutput> Outputs { get; } = new List<IOutput>() { new ConsoleOutput() };
+        public string Scope { get; set; }
 
-        private object lck = new object();
-
-        private int biggestLength = 0;
+        private static object lck = new object();
 
         private List<LogLevel> logLevels = new List<LogLevel>()
         {
@@ -24,10 +22,13 @@ namespace Crow.Logging
             new LogLevel("Warning", "[!]", Color.FromArgb(248, 250, 107)),
             new LogLevel("Success", "[v]", Color.LawnGreen),
             new LogLevel("Info", "[i]", Color.Cyan),
-            new LogLevel("Stacktrace", "[o]", Color.FromArgb(248, 250, 107))
+            new LogLevel("Stacktrace", "[o]", Color.FromArgb(248, 250, 107)),
+            new LogLevel("Awaiting", "[%]", Color.DeepSkyBlue)
         };
 
         private List<IFormatter> formatters = new List<IFormatter>();
+
+        private int biggestLength = 0;
 
         public Logger(string scope)
         {
@@ -46,100 +47,79 @@ namespace Crow.Logging
 
         public void Log(string loglevel, string content, string scope = "")
         {
-            string _scope = String.IsNullOrWhiteSpace(scope) ? Scope : scope;
-
-            if (String.IsNullOrWhiteSpace(_scope))
+            lock(lck)
             {
-                if (!String.IsNullOrWhiteSpace(loglevel))
-                {
-                    foreach (var logLevel in logLevels)
-                    {
-                        if (logLevel.Name.ToLower() == loglevel.ToLower())
-                        {
-                            foreach (var output in Outputs)
-                            {
-                                output.WriteLine($"{logLevel.Icon.Pastel(logLevel.Color)} { ANSI.Underline(logLevel.Name.Expand(biggestLength)).Pastel(logLevel.Color)} {content.Pastel(Color.LightGray) }");
-                            }
-
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var output in Outputs)
-                    {
-                        output.WriteLine($"{"".Expand(biggestLength + 2)} { content.Pastel(Color.Gray) }");
-                    }
-                }
-            }
-            else
-            {
-
-                if (!String.IsNullOrWhiteSpace(loglevel))
-                {
-                    foreach (var logLevel in logLevels)
-                    {
-                        if (logLevel.Name.ToLower() == loglevel.ToLower())
-                        {
-                            foreach (var output in Outputs)
-                            {
-                                output.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {logLevel.Icon.Pastel(logLevel.Color)} { ANSI.Underline(logLevel.Name).Pastel(logLevel.Color).Expand(biggestLength) } {content.Pastel(Color.LightGray)}");
-                            }
-
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var output in Outputs)
-                    {
-                        output.WriteLine($"[{_scope}]".Pastel(Color.Gray) + $" {"".Expand(biggestLength + 2)} { content.Pastel(Color.LightGray) }");
-                    }
-                }
-            }
+                InternalLog(loglevel, content, scope);
+            }   
         }
 
         public void Log(string loglevel, object input, string scope = "")
         {
-            var inputType = input.GetType();
-            var inputInterfaces = inputType.GetInterfaces();
-
-            foreach (var formatter in formatters)
+            lock(lck)
             {
-                var formatterType = formatter.GetType();
-                var interfaces = formatterType.GetInterfaces();
+                var inputType = input.GetType();
+                var inputInterfaces = inputType.GetInterfaces();
 
-                foreach (var interfac in interfaces)
+                foreach (var formatter in formatters)
                 {
-                    if (interfac.IsGenericType)
+                    var formatterType = formatter.GetType();
+                    var interfaces = formatterType.GetInterfaces();
+
+                    foreach (var interfac in interfaces)
                     {
-                        var genericArgument = interfac.GetGenericArguments()[0];
-
-                        if (genericArgument == inputType)
+                        if (interfac.IsGenericType)
                         {
-                            formatter.Format(loglevel, input);
+                            var genericArgument = interfac.GetGenericArguments()[0];
 
-                            return;
-                        }
-                        else
-                        {
-                            foreach (var inputInterface in inputInterfaces)
+                            if (genericArgument == inputType)
                             {
-                                if (genericArgument == inputInterface)
-                                {
-                                    formatter.Format(loglevel, input);
+                                formatter.Format(loglevel, input);
 
-                                    return;
+                                return;
+                            }
+                            else
+                            {
+                                foreach (var inputInterface in inputInterfaces)
+                                {
+                                    if (genericArgument == inputInterface)
+                                    {
+                                        formatter.Format(loglevel, input);
+
+                                        return;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+                InternalLog(loglevel, input.ToString(), scope);
+            }
+        }
+
+        internal void InternalLog(string logLevel, string content, string scope = "")
+        {
+            var _scope = string.IsNullOrWhiteSpace(scope) ? Scope : scope;
+            var _logLevel = string.IsNullOrWhiteSpace(logLevel) ? null : logLevels.FirstOrDefault(n => n.Name.ToLower() == logLevel.ToLower());
+            var message = "";
+
+            if (string.IsNullOrWhiteSpace(_scope))
+            {
+                if (_logLevel != null)   
+                    message = $"{_logLevel.Icon.Pastel(_logLevel.Color)} { ANSI.Underline(_logLevel.Name.Expand(biggestLength)).Pastel(_logLevel.Color)} {content.Pastel(Color.LightGray) }";
+                else
+                    message = $"{"".Expand(biggestLength + 2)} { content.Pastel(Color.Gray) }";
+            }
+            else
+            {
+                if (_logLevel != null)
+                    message = $"[{_scope}]".Pastel(Color.Gray) + $" {_logLevel.Icon.Pastel(_logLevel.Color)} { ANSI.Underline(_logLevel.Name).Pastel(_logLevel.Color).Expand(biggestLength) } {content.Pastel(Color.LightGray)}";
+                else
+                    message = $"[{_scope}]".Pastel(Color.Gray) + $" {"".Expand(biggestLength + 2)} { content.Pastel(Color.LightGray) }";
             }
 
-            Log(loglevel, input.ToString(), scope);
+            foreach(var output in Outputs)
+                output.WriteLine(message);
         }
     }
 }
