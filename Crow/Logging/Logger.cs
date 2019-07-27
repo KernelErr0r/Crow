@@ -3,9 +3,11 @@ using Crow.Logging.Formatting;
 using Crow.Logging.Formatting.Formatters;
 using Crow.Logging.Outputs;
 using Pastel;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Crow.Logging
 {
@@ -95,6 +97,37 @@ namespace Crow.Logging
 
                 InternalLog(loglevel, input.ToString(), scope);
             }
+        }
+
+        public async Task Log(Func<bool> task, string message, string successMessage, string failMessage, string logLevel = "Awaiting", string successLogLevel = "Success", string failLogLevel = "Error", string scope = "")
+        {
+            await Task.Run(() =>
+            {
+                var y = 0;
+                var x = 0;
+                var successMessageLength = successMessage.Length + Math.Abs(successMessage.Length - message.Length);
+                var failMessageLength = failMessage.Length + Math.Abs(failMessage.Length - message.Length);
+
+                lock (lck)
+                {
+                    InternalLog(logLevel, message, scope);
+
+                    y = Console.CursorTop - 1;
+                    x = Console.CursorLeft;
+                }
+
+                var result = task();
+
+                lock (lck)
+                {
+                    var ynew = Console.CursorTop;
+                    var xnew = Console.CursorLeft;
+
+                    Console.SetCursorPosition(0, y);
+                    InternalLog(result ? successLogLevel : failLogLevel, result ? successMessage.Expand(successMessageLength) : failMessage.Expand(failMessageLength), scope);
+                    Console.SetCursorPosition(xnew, ynew);
+                }
+            });
         }
 
         internal void InternalLog(string logLevel, string content, string scope = "")
