@@ -1,8 +1,8 @@
 ﻿using Crow.Commands;
 using Crow.Compiler;
 using Crow.Dependencies;
-using Crow.Logging;
 using Crow.Repositories;
+using Salem;
 using Jint;
 using System;
 using System.Collections.Generic;
