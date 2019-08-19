@@ -6,7 +6,7 @@ using Crow.Dependencies;
 using Crow.Repositories;
 using YamlDotNet.Serialization;
 
-namespace Crow
+namespace Crow.Data
 {
     [Serializable]
     public sealed class Configuration
