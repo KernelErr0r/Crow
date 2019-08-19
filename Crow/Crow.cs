@@ -2,12 +2,12 @@
 using Crow.Compiler;
 using Crow.Dependencies;
 using Crow.Repositories;
-using Salem;
 using Jint;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Salem;
 
 namespace Crow
 {
@@ -18,7 +18,7 @@ namespace Crow
         internal Engine engine;
 
         private CommandManager commandManager = new CommandManager();
-        private ILogger logger = new Logger("Crow");
+        private Logger logger = new Logger("Crow");
 
         private List<IRepository> repositories = new List<IRepository>();
         private List<IDependency> dependencies = new List<IDependency>();
