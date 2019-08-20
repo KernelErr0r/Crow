@@ -29,6 +29,7 @@ namespace Crow
             Instance = this;
 
             InitializeEngine();
+            InitializeCommands();
         }
 
         public void Start(string[] args)
@@ -61,6 +62,11 @@ namespace Crow
 
             engine.SetValue("dependencyManager", dependencyManager);
             engine.SetValue("repositoryManager", repositoryManager);
+        }
+
+        private void InitializeCommands()
+        {
+            commandManager.Register(new SetupCommand());
         }
     }
 }
