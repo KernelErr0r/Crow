@@ -1,4 +1,4 @@
-<center>
+<div align="center">
 
 <h1>Crow</h1>
 
@@ -6,10 +6,12 @@
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/kinda-sfw.svg)](https://forthebadge.com)
 
-</center>
+</div>
 
-<center>
+<div align="center">
+
 <h2>Status</h2>
+
 <table>
 <tr>
 <th>Branch</th>
@@ -43,4 +45,5 @@
 </td>
 </tr>
 </table>
-</center>
+
+</div>
