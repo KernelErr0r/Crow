@@ -8,15 +8,7 @@
 
 </div>
 
-<div align="center">
-  
-![Travis (.org)](https://img.shields.io/travis/KernelErr0r/Crow?style=for-the-badge)
-![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/master?style=for-the-badge)
-
-</div>
-
-<div align="center">
-
-[![Total lines](https://tokei.rs/b1/github/KernelErr0r/Crow?category=lines)](https://github.com/KernelErr0r/Crow)
-
-</div>
+| Branch | Build | Code Quality |
+|--------|-------|--------------|
+| Master | ![Travis (.org) branch](https://img.shields.io/travis/KernelErr0r/Crow/master?style=for-the-badge) | ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/master?style=for-the-badge) |
+|  Dev   | ![Travis (.org) branch](https://img.shields.io/travis/KernelErr0r/Crow/dev?style=for-the-badge)    | ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/dev?style=for-the-badge)    |
