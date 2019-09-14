@@ -4,7 +4,7 @@ namespace Crow.Api
     {
         string Name { get; }
         
-        void Init();
-        void LateInit();
+        bool PreInit();
+        bool Init();
     }
 }
