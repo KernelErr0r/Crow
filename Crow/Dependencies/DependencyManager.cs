@@ -3,7 +3,7 @@ using Crow.Api.Dependencies;
 
 namespace Crow.Dependencies
 {
-    public class DependencyManager
+    public class DependencyManager : IDependencyManager
     {
         public IReadOnlyList<IDependency> Dependencies => dependencies;
         private List<IDependency> dependencies = new List<IDependency>();

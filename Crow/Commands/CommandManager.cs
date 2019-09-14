@@ -4,7 +4,7 @@ using Crow.Api.Commands;
 
 namespace Crow.Commands
 {
-    public class CommandManager
+    public class CommandManager : ICommandManager
     {
         public IReadOnlyList<ICommand> Commands => commands;
 

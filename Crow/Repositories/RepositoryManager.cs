@@ -3,7 +3,7 @@ using Crow.Api.Repositories;
 
 namespace Crow.Repositories
 {
-    public class RepositoryManager
+    public class RepositoryManager : IRepositoryManager
     {
         public IReadOnlyList<IRepository> Repositories => repositories;
         private List<IRepository> repositories = new List<IRepository>();
