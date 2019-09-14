@@ -1,4 +1,4 @@
-﻿namespace Crow.Commands
+﻿namespace Crow.Api.Commands
 {
     public interface ICommand
     {

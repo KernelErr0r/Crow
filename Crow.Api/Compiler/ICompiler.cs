@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Crow.Compiler
+namespace Crow.Api.Compiler
 {
     public interface ICompiler
     {

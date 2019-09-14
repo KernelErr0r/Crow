@@ -1,8 +1,8 @@
-﻿using Crow.Dependencies;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Crow.Api.Dependencies;
 
-namespace Crow.Repositories
+namespace Crow.Api.Repositories
 {
     public interface IRepository
     {

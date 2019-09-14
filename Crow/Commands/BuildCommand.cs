@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Crow.Api.Commands;
 
 namespace Crow.Commands
 {

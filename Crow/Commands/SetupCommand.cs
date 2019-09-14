@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using Crow.Api.Commands;
 using Salem;
 
 namespace Crow.Commands

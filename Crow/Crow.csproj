@@ -19,5 +19,9 @@
     <PackageReference Include="Salem" Version="1.0.1" />
     <PackageReference Include="YamlDotNet" Version="6.1.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Crow.Api\Crow.Api.csproj" />
+  </ItemGroup>
   
 </Project>

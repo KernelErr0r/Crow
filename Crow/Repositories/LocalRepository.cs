@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Crow.Api.Dependencies;
+using Crow.Api.Repositories;
 
 namespace Crow.Repositories
 {

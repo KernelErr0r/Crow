@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Crow.Dependencies
+namespace Crow.Api.Dependencies
 {
     public interface IDependency
     {

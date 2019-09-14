@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Crow.Api.Compiler;
 
 namespace Crow.Compiler
 {
