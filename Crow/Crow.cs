@@ -27,7 +27,7 @@ namespace Crow
 
             InitializeApi();
             InitializeEngine();
-            InitializeCommands();
+            RegisterCommands();
         }
 
         public void Start(string[] args)
@@ -69,7 +69,7 @@ namespace Crow
             engine.SetValue("repositoryManager", CrowApi.RepositoryManager);
         }
 
-        private void InitializeCommands()
+        private void RegisterCommands()
         {
             CrowApi.CommandManager.Register(new SetupCommand());
         }
