@@ -26,10 +26,17 @@ namespace Crow
         private List<Tuple<ICompiler, string>> compilers = new List<Tuple<ICompiler, string>>();
         private ConcurrentBag<IPlugin> plugins = new ConcurrentBag<IPlugin>();
 
+        private string mainDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName);
+        
+        private string pluginsDirectory;
+        private string librariesDirectory;
+        private string configsDirectory;
+
         public Crow()
         {
             Instance = this;
 
+            InitializeDirectories();
             InitializeApi();
             LoadPlugins();
             InitializePlugins();
@@ -56,6 +63,22 @@ namespace Crow
             }
         }
 
+        private void InitializeDirectories()
+        {
+            pluginsDirectory = Path.Combine(mainDirectory, "Plugins");
+            librariesDirectory = Path.Combine(mainDirectory, "Libraries");
+            configsDirectory = Path.Combine(mainDirectory, "Configs");
+        
+            if (!Directory.Exists(pluginsDirectory))
+                Directory.CreateDirectory(pluginsDirectory);
+            
+            if (!Directory.Exists(librariesDirectory))
+                Directory.CreateDirectory(librariesDirectory);
+                            
+            if (!Directory.Exists(configsDirectory))
+                Directory.CreateDirectory(configsDirectory);
+        }
+
         private void InitializeApi()
         {
             CrowApi.CommandManager = new CommandManager();
@@ -65,8 +88,6 @@ namespace Crow
 
         private void LoadPlugins()
         {
-            var executableFilePath = Process.GetCurrentProcess().MainModule?.FileName;
-            var pluginsDirectory = Path.Combine(Path.GetDirectoryName(executableFilePath), "Plugins");
             var files = new ConcurrentBag<string>(Directory.GetFiles(pluginsDirectory));
 
             Parallel.ForEach(files, (file) =>
