@@ -8,10 +8,10 @@ namespace Crow.Dependencies
         public IReadOnlyList<IDependency> Dependencies => dependencies;
         private List<IDependency> dependencies = new List<IDependency>();
 
-        public void AddRepository(IDependency dependency) 
+        public void AddDependency(IDependency dependency) 
             => dependencies.Add(dependency);
 
-        public void RemoveRepository(IDependency dependency) 
+        public void RemoveDependency(IDependency dependency) 
             => dependencies.Remove(dependency);
     }
 }
