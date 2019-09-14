@@ -16,9 +16,9 @@ namespace Crow.Tests
 
             var parsedArguments = argumentParser.Parse(GetType().GetMethod("ExampleMethod1", BindingFlags.NonPublic | BindingFlags.Instance), "test1", "test2");
             
-            Assert.Equal(parsedArguments.Count, 2);
-            Assert.Equal(parsedArguments[0], "test1");
-            Assert.Equal(parsedArguments[1], "test2");
+            Assert.Equal(2, parsedArguments.Count);
+            Assert.Equal("test1", parsedArguments[0]);
+            Assert.Equal("test2", parsedArguments[1]);
         }
 
         [Fact]
@@ -30,8 +30,8 @@ namespace Crow.Tests
 
             var parsedArguments = argumentParser.Parse(GetType().GetMethod("ExampleMethod2", BindingFlags.NonPublic | BindingFlags.Instance), "15");
             
-            Assert.Equal(parsedArguments.Count, 1);
-            Assert.Equal(parsedArguments[0], 15);
+            Assert.Single(parsedArguments);
+            Assert.Equal(15, parsedArguments[0]);
         }
         
         private void ExampleMethod1(string arg1, string arg2) {}
