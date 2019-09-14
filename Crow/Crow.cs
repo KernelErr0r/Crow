@@ -5,6 +5,7 @@ using Jint;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Crow.Api;
 using Crow.Api.Compiler;
 using Salem;
 
@@ -16,10 +17,6 @@ namespace Crow
 
         internal Engine engine;
 
-        private CommandManager commandManager = new CommandManager();
-        private DependencyManager dependencyManager = new DependencyManager();
-        private RepositoryManager repositoryManager = new RepositoryManager();
-        
         private Logger logger = new Logger("Crow");
 
         private List<Tuple<ICompiler, string>> compilers = new List<Tuple<ICompiler, string>>();
@@ -28,6 +25,7 @@ namespace Crow
         {
             Instance = this;
 
+            InitializeApi();
             InitializeEngine();
             InitializeCommands();
         }
@@ -38,7 +36,7 @@ namespace Crow
             {
                 if (args.Length > 0)
                 {
-                    commandManager.Invoke(args[0], args.Length == 1 ? null : args.Skip(1).ToArray());
+                    CrowApi.CommandManager.Invoke(args[0], args.Length == 1 ? null : args.Skip(1).ToArray());
                 }
                 else
                 {
@@ -51,6 +49,13 @@ namespace Crow
             }
         }
 
+        private void InitializeApi()
+        {
+            CrowApi.CommandManager = new CommandManager();
+            CrowApi.DependencyManager = new DependencyManager();
+            CrowApi.RepositoryManager = new RepositoryManager();
+        }
+        
         private void InitializeEngine()
         {
             engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
@@ -60,13 +65,13 @@ namespace Crow
                 return true;
             }));
 
-            engine.SetValue("dependencyManager", dependencyManager);
-            engine.SetValue("repositoryManager", repositoryManager);
+            engine.SetValue("dependencyManager", CrowApi.DependencyManager);
+            engine.SetValue("repositoryManager", CrowApi.RepositoryManager);
         }
 
         private void InitializeCommands()
         {
-            commandManager.Register(new SetupCommand());
+            CrowApi.CommandManager.Register(new SetupCommand());
         }
     }
 }
