@@ -6,27 +6,22 @@ using Salem;
 
 namespace Crow.Commands
 {
-    public class SetupCommand : ICommand
+    [Command("setup", "setup [template]", "")]
+    public class SetupCommand
     {
-        public string Name => "setup";
-        public string Description => "";
-        
         private Logger logger = new Logger("Setup");
 
-        public void Invoke(params string[] arguments)
+        public void Invoke(string template = "Default")
         {
             var workingDirectory = Path.Combine(Environment.CurrentDirectory, ".Crow");
-            var templatesDirectory = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName), "Templates");
+            var templatesDirectory = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName), "Templates");
             
             if (!Directory.Exists(workingDirectory))
             {
                 Directory.CreateDirectory(workingDirectory);
                 logger.Log("Info", "Created a directory '.Crow'");
                 
-                if ((arguments?.Length ?? 0) == 0)
-                    CopyTemplate(Path.Combine(templatesDirectory, "Default"), ".Crow");
-                else
-                    CopyTemplate(Path.Combine(templatesDirectory, arguments[0]), ".Crow");
+                CopyTemplate(Path.Combine(templatesDirectory, template), ".Crow");
 
                 Directory.CreateDirectory(Path.Combine(workingDirectory, "libs"));
                 logger.Log("Info", "Created a directory '.Crow/libs'");

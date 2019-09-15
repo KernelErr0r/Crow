@@ -1,34 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Crow.Api.Commands;
+using Crow.Commands.Parsers;
+using Salem;
 
 namespace Crow.Commands
 {
     public class CommandManager : ICommandManager
     {
-        public IReadOnlyList<ICommand> Commands => commands;
+        public IReadOnlyDictionary<Command, object> Commands => commands;
+        
+        private Dictionary<Command, object> commands = new Dictionary<Command, object>();
 
-        private List<ICommand> commands = new List<ICommand>();
+        private ArgumentParser argumentParser = new ArgumentParser();
+        private Logger logger = new Logger("Crow");
 
-        public void Register(ICommand command) =>
-            commands.Add(command);
+        public CommandManager()
+        {
+            argumentParser.RegisterTypeParser(new StringParser());
+            argumentParser.RegisterTypeParser(new NumberParser());
+        }
 
-        public void Unregister(ICommand command) =>
-            commands.Remove(command);
+        public void Register(object command)
+        {
+            var type = command.GetType();
+            var attribute = type.GetCustomAttribute(typeof(Command)) as Command;
+
+            if (attribute != null)
+            {
+                commands.Add(attribute, command);
+            }
+            else
+            {
+                throw new ArgumentException("Invalid command");
+            }
+        }
+
+        public void Unregister(object command)
+        {
+            var type = command.GetType();
+            var attribute = type.GetCustomAttribute(typeof(Command)) as Command;
+
+            if (attribute != null)
+            {
+                commands.Remove(attribute);
+            }
+            else
+            {
+                throw new ArgumentException("Invalid command");
+            }
+        }
 
         public void Invoke(string name, params string[] arguments)
         {
-            foreach (var command in commands)
+            try
             {
-                if (command.Name.ToLower() == name.ToLower())
+                foreach (var command in commands)
                 {
-                    command.Invoke(arguments);
+                    if (command.Key.Name.ToLower() == name.ToLower())
+                    {
+                        var type = command.Value.GetType();
+                        var invokeMethod = type.GetMethod("Invoke");
+                        var parsedArgs = argumentParser.Parse(invokeMethod, arguments);
+                        
+                        invokeMethod.Invoke(command.Value, parsedArgs.ToArray());
 
-                    return;
+                        return;
+                    }
                 }
             }
-
-            throw new Exception($"Command {name} doesn't exist");
+            catch (ArgumentException)
+            {
+                logger.Log("Error", "Incorrect usage");
+            }
+            
+            logger.Log("Error", $"Command {name} doesn't exist");
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Crow
             {
                 if (args.Length > 0)
                 {
-                    CrowApi.CommandManager.Invoke(args[0], args.Length == 1 ? null : args.Skip(1).ToArray());
+                    CrowApi.CommandManager.Invoke(args[0], args.Length == 1 ? new string[0] : args.Skip(1).ToArray());
                 }
                 else
                 {

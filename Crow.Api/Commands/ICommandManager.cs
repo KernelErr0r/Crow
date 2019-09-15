@@ -4,10 +4,11 @@ namespace Crow.Api.Commands
 {
     public interface ICommandManager
     {
-        IReadOnlyList<ICommand> Commands { get; }
+        IReadOnlyDictionary<Command, object> Commands { get; }
         
-        void Register(ICommand command);
-        void Unregister(ICommand command);
+        void Register(object command);
+        void Unregister(object command);
+
         void Invoke(string name, params string[] arguments);
     }
 }

@@ -1,36 +1,25 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Crow.Api.Commands;
 
 namespace Crow.Commands
 {
-    public class BuildCommand : ICommand
+    [Command("build", "build [build script]", "")]
+    public class BuildCommand
     {
-        public string Name => "build";
-
-        public string Description => "";
-
-        public void Invoke(params string[] arguments)
+        public void Invoke(string file)
         {
-            if (arguments.Length > 0)
+            if (File.Exists(file))
             {
-                if (File.Exists(arguments[0]))
-                {
-                    Crow.Instance.engine = Crow.Instance.engine.Execute(File.ReadAllText(arguments[0]));
+                Crow.Instance.engine = Crow.Instance.engine.Execute(File.ReadAllText(file));
 
-                    var configure = Crow.Instance.engine.GetValue("configure");
-                    var build = Crow.Instance.engine.GetValue("build");
+                var configure = Crow.Instance.engine.GetValue("configure");
+                var build = Crow.Instance.engine.GetValue("build");
 
-                    configure.Invoke();
-                }
-                else
-                {
-                    throw new FileNotFoundException(arguments[0]);
-                }
+                configure.Invoke();
             }
             else
             {
-                throw new ArgumentException();
+                throw new FileNotFoundException(file);
             }
         }
     }
