@@ -8,7 +8,7 @@ namespace Crow.Commands
 {
     public class ArgumentParser : IArgumentParser
     {
-        private List<Tuple<TypeParser, Type, object>> parsers = new List<Tuple<TypeParser, Type, object>>();
+        private List<Tuple<TypeParser, Type, object>> parsers = new List<Tuple<TypeParser, Type, object>>(); //Attribute || Type of Parser || Instance
         
         public void RegisterTypeParser(object parser)
         {
@@ -59,8 +59,13 @@ namespace Crow.Commands
             var parameters = methodInfo.GetParameters();
             var typeCandidates = new Dictionary<ParameterInfo, List<Tuple<TypeParser, Type, object>>>();
             var argumentIndex = 0;
+            var optionalParameters = 0;
+            
+            foreach(var parameter in parameters)
+                if(parameter.IsOptional)
+                    optionalParameters++;
 
-            if (arguments.Length > 0)
+            if (arguments.Length >= parameters.Length - optionalParameters)
             {
                 foreach (var parameter in parameters)
                 {
@@ -84,7 +89,7 @@ namespace Crow.Commands
                     {
                         foreach (var type in typeCandidates[parameter])
                         {
-                            if (parameter.ParameterType == type.Item1.Type)
+                            if (parameter.ParameterType == type.Item1.Type && argumentIndex < arguments.Length)
                             {
                                 foreach (var method in type.Item2.GetMethods())
                                 {
@@ -105,6 +110,13 @@ namespace Crow.Commands
                         //TODO
                     }
                 }
+                
+                for (int i = 0; i < Math.Max(parameters.Length - result.Count, 0); i++)
+                    result.Add(Type.Missing);
+            }
+            else
+            {
+                throw new ArgumentException();
             }
 
             return result;
