@@ -61,6 +61,8 @@ namespace Crow.Commands
             var argumentIndex = 0;
             var optionalParameters = 0;
             
+            arguments = arguments ?? new string[0];
+            
             foreach(var parameter in parameters)
                 if(parameter.IsOptional)
                     optionalParameters++;
