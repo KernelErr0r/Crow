@@ -31,6 +31,7 @@ namespace Crow
         private string pluginsDirectory;
         private string librariesDirectory;
         private string configsDirectory;
+        private string templatesDirectory;
 
         public Crow()
         {
@@ -68,6 +69,7 @@ namespace Crow
             pluginsDirectory = Path.Combine(mainDirectory, "Plugins");
             librariesDirectory = Path.Combine(mainDirectory, "Libraries");
             configsDirectory = Path.Combine(mainDirectory, "Configs");
+            templatesDirectory = Path.Combine(mainDirectory, "Templates");
         
             if (!Directory.Exists(pluginsDirectory))
                 Directory.CreateDirectory(pluginsDirectory);
@@ -77,6 +79,9 @@ namespace Crow
                             
             if (!Directory.Exists(configsDirectory))
                 Directory.CreateDirectory(configsDirectory);
+                
+            if (!Directory.Exists(templatesDirectory))
+                Directory.CreateDirectory(templatesDirectory);
         }
 
         private void InitializeApi()
