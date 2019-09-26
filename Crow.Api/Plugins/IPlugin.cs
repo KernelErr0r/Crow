@@ -1,4 +1,4 @@
-namespace Crow.Api
+namespace Crow.Api.Plugins
 {
     public interface IPlugin
     {
