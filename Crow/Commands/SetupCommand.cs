@@ -14,14 +14,13 @@ namespace Crow.Commands
         public void Invoke(string template = "Default")
         {
             var workingDirectory = Path.Combine(Environment.CurrentDirectory, ".Crow");
-            var templatesDirectory = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName), "Templates");
-            
+
             if (!Directory.Exists(workingDirectory))
             {
                 Directory.CreateDirectory(workingDirectory);
                 logger.Log("Info", "Created a directory '.Crow'");
                 
-                CopyTemplate(Path.Combine(templatesDirectory, template), ".Crow");
+                CopyTemplate(Path.Combine(Crow.Instance.TemplatesDirectory, template), ".Crow");
 
                 Directory.CreateDirectory(Path.Combine(workingDirectory, "libs"));
                 logger.Log("Info", "Created a directory '.Crow/libs'");

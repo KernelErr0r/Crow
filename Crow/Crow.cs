@@ -3,14 +3,13 @@ using Crow.Dependencies;
 using Crow.Repositories;
 using Jint;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Crow.Api;
 using Crow.Api.Compiler;
+using Crow.Plugins;
 using Salem;
 
 namespace Crow
@@ -18,20 +17,19 @@ namespace Crow
     public class Crow
     {
         public static Crow Instance { get; private set; }
+        
+        public string MainDirectory { get; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName);
+        public string PluginsDirectory { get; private set; }
+        public string LibrariesDirectory { get; private set; }
+        public string ConfigsDirectory { get; private set; }
+        public string TemplatesDirectory { get; private set; }
 
-        internal Engine engine;
+        internal Engine Engine;
 
-        private Logger logger = new Logger("Crow");
+        private readonly Logger logger = new Logger("Crow");
+        private readonly PluginManager pluginManager = new PluginManager();
 
         private List<Tuple<ICompiler, string>> compilers = new List<Tuple<ICompiler, string>>();
-        private ConcurrentBag<IPlugin> plugins = new ConcurrentBag<IPlugin>();
-
-        private string mainDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName);
-        
-        private string pluginsDirectory;
-        private string librariesDirectory;
-        private string configsDirectory;
-        private string templatesDirectory;
 
         public Crow()
         {
@@ -39,8 +37,8 @@ namespace Crow
 
             InitializeDirectories();
             InitializeApi();
-            LoadPlugins();
-            InitializePlugins();
+            pluginManager.LoadPlugins();
+            pluginManager.InitializePlugins();
             InitializeEngine();
             RegisterCommands();
         }
@@ -66,22 +64,22 @@ namespace Crow
 
         private void InitializeDirectories()
         {
-            pluginsDirectory = Path.Combine(mainDirectory, "Plugins");
-            librariesDirectory = Path.Combine(mainDirectory, "Libraries");
-            configsDirectory = Path.Combine(mainDirectory, "Configs");
-            templatesDirectory = Path.Combine(mainDirectory, "Templates");
+            PluginsDirectory = Path.Combine(MainDirectory, "Plugins");
+            LibrariesDirectory = Path.Combine(MainDirectory, "Libraries");
+            ConfigsDirectory = Path.Combine(MainDirectory, "Configs");
+            TemplatesDirectory = Path.Combine(MainDirectory, "Templates");
         
-            if (!Directory.Exists(pluginsDirectory))
-                Directory.CreateDirectory(pluginsDirectory);
+            if (!Directory.Exists(PluginsDirectory))
+                Directory.CreateDirectory(PluginsDirectory);
             
-            if (!Directory.Exists(librariesDirectory))
-                Directory.CreateDirectory(librariesDirectory);
+            if (!Directory.Exists(LibrariesDirectory))
+                Directory.CreateDirectory(LibrariesDirectory);
                             
-            if (!Directory.Exists(configsDirectory))
-                Directory.CreateDirectory(configsDirectory);
+            if (!Directory.Exists(ConfigsDirectory))
+                Directory.CreateDirectory(ConfigsDirectory);
                 
-            if (!Directory.Exists(templatesDirectory))
-                Directory.CreateDirectory(templatesDirectory);
+            if (!Directory.Exists(TemplatesDirectory))
+                Directory.CreateDirectory(TemplatesDirectory);
         }
 
         private void InitializeApi()
@@ -91,55 +89,17 @@ namespace Crow
             CrowApi.RepositoryManager = new RepositoryManager();
         }
 
-        private void LoadPlugins()
-        {
-            var files = new ConcurrentBag<string>(Directory.GetFiles(pluginsDirectory));
-
-            Parallel.ForEach(files, (file) =>
-            {
-                if (Path.GetExtension(file) == ".dll")
-                {
-                    var rawAssembly = File.ReadAllBytes(file);
-                    var assembly = AppDomain.CurrentDomain.Load(rawAssembly);
-
-                    foreach (var type in assembly.GetTypes())
-                    {
-                        if (type.GetInterface("IPlugin") != null)
-                        {
-                            var plugin = Activator.CreateInstance(type) as IPlugin;
-                        
-                            plugins.Add(plugin);
-                        }
-                    }   
-                }
-            });
-        }
-        
-        private void InitializePlugins()
-        {
-            Parallel.ForEach(plugins, async (plugin) =>
-            {
-                await logger.Log(() => plugin.PreInit(), $"Preinitializing {plugin.Name}", $"Successfully preinitialized {plugin.Name}", $"Couldn't preinitialize {plugin.Name}"); 
-            });
-
-            
-            Parallel.ForEach(plugins, async (plugin) =>
-            {
-                await logger.Log(() => plugin.Init(), $"Initializing {plugin.Name}", $"Successfully initialized {plugin.Name}", $"Couldn't initialize {plugin.Name}");
-            });
-        }
-        
         private void InitializeEngine()
         {
-            engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
+            Engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
             {
                 logger.Log("Error", exception);
 
                 return true;
             }));
 
-            engine.SetValue("dependencyManager", CrowApi.DependencyManager);
-            engine.SetValue("repositoryManager", CrowApi.RepositoryManager);
+            Engine.SetValue("dependencyManager", CrowApi.DependencyManager);
+            Engine.SetValue("repositoryManager", CrowApi.RepositoryManager);
         }
 
         private void RegisterCommands()
