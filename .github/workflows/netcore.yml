@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        dotnet: [3.0]
+        dotnet: [3.0.100]
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
