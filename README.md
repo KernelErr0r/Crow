@@ -10,7 +10,9 @@
 
 <h2>Status</h2>
 
-| Branch | Build | Code Quality |
-|--------|-------|--------------|
-| Master | ![Travis (.org) branch](https://img.shields.io/travis/KernelErr0r/Crow/master?style=for-the-badge) | ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/master?style=for-the-badge) |
-|  Dev   | ![Travis (.org) branch](https://img.shields.io/travis/KernelErr0r/Crow/dev?style=for-the-badge)    | ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/dev?style=for-the-badge)    |
+<div align="center">
+
+[![Actions Status](https://github.com/KernelErr0r/Crow/workflows/.NET%20Core%20CI/badge.svg)](https://github.com/KernelErr0r/Crow/actions)
+![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/master)
+
+</div>
