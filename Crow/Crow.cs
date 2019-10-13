@@ -10,6 +10,7 @@ using System.Linq;
 using Crow.Api;
 using Crow.Api.Compiler;
 using Crow.Plugins;
+using Raven;
 using Salem;
 
 namespace Crow
@@ -104,7 +105,7 @@ namespace Crow
 
         private void RegisterCommands()
         {
-            CrowApi.CommandManager.Register(new SetupCommand());
+            CrowApi.CommandManager.RegisterCommand(new SetupCommand());
         }
     }
 }

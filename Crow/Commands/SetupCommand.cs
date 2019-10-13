@@ -1,7 +1,6 @@
 using System;
-using System.Diagnostics;
 using System.IO;
-using Crow.Api.Commands;
+using Raven;
 using Salem;
 
 namespace Crow.Commands
@@ -11,7 +10,8 @@ namespace Crow.Commands
     {
         private Logger logger = new Logger("Setup");
 
-        public void Invoke(string template = "Default")
+        [Default]
+        public void Default([DefaultValue("Default")] string template)
         {
             var workingDirectory = Path.Combine(Environment.CurrentDirectory, ".Crow");
 

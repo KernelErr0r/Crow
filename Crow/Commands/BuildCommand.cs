@@ -1,12 +1,13 @@
 ﻿using System.IO;
-using Crow.Api.Commands;
+using Raven;
 
 namespace Crow.Commands
 {
     [Command("build", "build [build script]", "")]
     public class BuildCommand
     {
-        public void Invoke(string file)
+        [Default]
+        public void Default(string file)
         {
             if (File.Exists(file))
             {
