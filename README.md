@@ -8,9 +8,9 @@
 
 </div>
 
-<h2>Status</h2>
-
 <div align="center">
+
+<h2>Status</h2>
 
 [![Actions Status](https://github.com/KernelErr0r/Crow/workflows/.NET%20Core%20CI/badge.svg)](https://github.com/KernelErr0r/Crow/actions)
 ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/KernelErr0r/Crow/master)
