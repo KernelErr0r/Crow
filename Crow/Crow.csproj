@@ -10,7 +10,6 @@
   <ItemGroup>
     <PackageReference Include="dnlib" Version="3.2.0" />
     <PackageReference Include="Iced" Version="1.3.0" />
-    <PackageReference Include="Jint" Version="3.0.0-beta-1598" />
     <PackageReference Include="LtGt" Version="1.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.0-beta2-final" />
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="3.3.0-beta2-final" />
@@ -24,6 +23,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Crow.Api\Crow.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Nemerle, Version=1.2.0.547, Culture=neutral, PublicKeyToken=e080a9c724e2bfcd">
+      <HintPath>..\Libraries\Nemerle.dll</HintPath>
+    </Reference>
+    <Reference Include="Nemerle.Compiler, Version=1.2.0.547, Culture=neutral, PublicKeyToken=5291d186334f6101">
+      <HintPath>..\Libraries\Nemerle.Compiler.dll</HintPath>
+    </Reference>
   </ItemGroup>
   
 </Project>

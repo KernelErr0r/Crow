@@ -11,12 +11,7 @@ namespace Crow.Commands
         {
             if (File.Exists(file))
             {
-                Crow.Instance.Engine = Crow.Instance.Engine.Execute(File.ReadAllText(file));
 
-                var configure = Crow.Instance.Engine.GetValue("configure");
-                var build = Crow.Instance.Engine.GetValue("build");
-
-                configure.Invoke();
             }
             else
             {

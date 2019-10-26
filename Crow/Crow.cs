@@ -1,7 +1,6 @@
 ﻿using Crow.Commands;
 using Crow.Dependencies;
 using Crow.Repositories;
-using Jint;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,8 +24,6 @@ namespace Crow
         public string ConfigsDirectory { get; private set; }
         public string TemplatesDirectory { get; private set; }
 
-        internal Engine Engine;
-
         private readonly Logger logger = new Logger("Crow");
         private readonly PluginManager pluginManager = new PluginManager();
 
@@ -40,7 +37,6 @@ namespace Crow
             InitializeApi();
             pluginManager.LoadPlugins();
             pluginManager.InitializePlugins();
-            InitializeEngine();
             RegisterCommands();
         }
 
@@ -89,20 +85,7 @@ namespace Crow
             CrowApi.DependencyManager = new DependencyManager();
             CrowApi.RepositoryManager = new RepositoryManager();
         }
-
-        private void InitializeEngine()
-        {
-            Engine = new Engine(config => config.AllowClr().CatchClrExceptions((exception) =>
-            {
-                logger.Log("Error", exception);
-
-                return true;
-            }));
-
-            Engine.SetValue("dependencyManager", CrowApi.DependencyManager);
-            Engine.SetValue("repositoryManager", CrowApi.RepositoryManager);
-        }
-
+        
         private void RegisterCommands()
         {
             CrowApi.CommandManager.RegisterCommand(new SetupCommand());
