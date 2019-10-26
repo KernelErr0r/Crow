@@ -88,6 +88,7 @@ namespace Crow
         
         private void RegisterCommands()
         {
+            CrowApi.CommandManager.RegisterCommand(new InteractiveCommand());
             CrowApi.CommandManager.RegisterCommand(new SetupCommand());
         }
     }
