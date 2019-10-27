@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Crow.Api;
 using Crow.Api.Compiler;
+using Crow.Compiler;
 using Crow.Plugins;
 using Raven;
 using Salem;
@@ -82,6 +83,7 @@ namespace Crow
         private void InitializeApi()
         {
             CrowApi.CommandManager = new CommandManager();
+            CrowApi.CompilerManager = new CompilerManager();
             CrowApi.DependencyManager = new DependencyManager();
             CrowApi.RepositoryManager = new RepositoryManager();
         }
@@ -90,6 +92,7 @@ namespace Crow
         {
             CrowApi.CommandManager.RegisterCommand(new InteractiveCommand());
             CrowApi.CommandManager.RegisterCommand(new SetupCommand());
+            CrowApi.CommandManager.RegisterCommand(new BuildCommand());
         }
     }
 }
