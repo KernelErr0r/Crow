@@ -87,10 +87,14 @@ namespace Crow.Commands
                         var directories = Directory.GetDirectories(".Crow/builds/");
                         var directory = "";
                         
-                        
-                        if (directories.Length == 0)
+                        if (!Crow.Instance.GlobalConfig.StorePreviousBuilds || directories.Length == 0)
                         {
                             directory = ".Crow/builds/0";
+
+                            if (Directory.Exists(directory))
+                            {
+                                Directory.Delete(directory, true);
+                            }
                         }
                         else
                         {

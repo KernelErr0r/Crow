@@ -9,7 +9,10 @@ using System.Linq;
 using Crow.Api;
 using Crow.Api.Compiler;
 using Crow.Compiler;
+using Crow.Data;
 using Crow.Plugins;
+using Hjson;
+using Newtonsoft.Json;
 using Raven;
 using Salem;
 
@@ -18,6 +21,8 @@ namespace Crow
     public class Crow
     {
         public static Crow Instance { get; private set; }
+
+        public GlobalConfig GlobalConfig { get; private set; }
         
         public string MainDirectory { get; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName);
         public string PluginsDirectory { get; private set; }
@@ -35,6 +40,7 @@ namespace Crow
             Instance = this;
 
             InitializeDirectories();
+            InitializeConfigs();
             InitializeApi();
             pluginManager.LoadPlugins();
             pluginManager.InitializePlugins();
@@ -78,6 +84,27 @@ namespace Crow
                 
             if (!Directory.Exists(TemplatesDirectory))
                 Directory.CreateDirectory(TemplatesDirectory);
+        }
+
+        private void InitializeConfigs()
+        {
+            var globalConfigFile = Path.Combine(ConfigsDirectory, "global.hjson");
+
+            string json;
+            string hjson;
+            
+            if (!File.Exists(globalConfigFile))
+            {
+                json = JsonConvert.SerializeObject(new GlobalConfig(), Formatting.Indented);
+                hjson = JsonValue.Parse(json).ToString(Stringify.Hjson);
+                
+                File.WriteAllText(globalConfigFile, hjson);
+            }
+
+            hjson = File.ReadAllText(globalConfigFile);
+            json = HjsonValue.Parse(hjson).ToString();
+
+            GlobalConfig = JsonConvert.DeserializeObject<GlobalConfig>(json);
         }
 
         private void InitializeApi()
