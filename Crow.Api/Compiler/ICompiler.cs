@@ -6,6 +6,7 @@ namespace Crow.Api.Compiler
     {
         event EventHandler<int> Finished;
 
+        void Compile(string output, string[] sourceFiles);
         void Compile(string output, string[] sourceFiles, string[] libraries);
     }
 }

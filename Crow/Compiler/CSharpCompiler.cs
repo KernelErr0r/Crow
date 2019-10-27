@@ -11,6 +11,44 @@ namespace Crow.Compiler
     {
         public event EventHandler<int> Finished;
 
+        public void Compile(string output, string[] sourceFiles)
+        {
+            if (sourceFiles.Length > 0)
+            {
+                var syntaxTrees = new List<SyntaxTree>();
+
+                foreach (var file in sourceFiles)
+                {
+                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(file)));
+                }
+
+                var compilation = CSharpCompilation.Create(output, syntaxTrees);
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    var result = compilation.Emit(memoryStream);
+
+                    if (result.Success)
+                    {
+                        using (var streamWriter = new StreamWriter(output))
+                        {
+                            streamWriter.Write(memoryStream.ToArray());
+                        }
+
+                        Finished?.Invoke(this, 0);
+                    }
+                    else
+                    {
+                        Finished?.Invoke(this, 1);
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
         public void Compile(string output, string[] source, string[] libraries)
         {
             if (source.Length > 0)
@@ -51,7 +89,7 @@ namespace Crow.Compiler
             }
             else
             {
-                throw new Exception();
+                throw new ArgumentException();
             }
         }
     }

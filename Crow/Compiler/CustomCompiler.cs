@@ -33,6 +33,18 @@ namespace Crow.Compiler
             }
         }
 
+        public void Compile(string output, string[] sourceFiles)
+        {
+            var processStartInfo = new ProcessStartInfo()
+            {
+                FileName = filePath,
+                Arguments = String.Format(arguments, output, String.Join(' ', sourceFiles))
+            };
+
+            process.StartInfo = processStartInfo;
+            process.Start();
+        }
+
         public void Compile(string output, string[] files, string[] libraries)
         {
             var processStartInfo = new ProcessStartInfo()
