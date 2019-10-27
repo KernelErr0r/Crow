@@ -7,5 +7,6 @@ namespace Crow.Data
     {
         public string Executable { get; set; }
         public string Arguments { get; set; }
+        public string[] FileTypes { get; set; }
     }
 }
