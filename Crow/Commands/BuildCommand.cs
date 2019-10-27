@@ -108,7 +108,7 @@ namespace Crow.Commands
                         
                         Directory.CreateDirectory(directory);
                         
-                        compiler.Compile($"{directory}/output.exe", files.ToArray());
+                        compiler.Compile($"{directory}/{buildConfig.Name}-{buildConfig.Version}.exe", files.ToArray());
                     }
                 }
                 else
