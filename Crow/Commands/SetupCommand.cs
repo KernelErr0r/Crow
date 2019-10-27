@@ -27,6 +27,10 @@ namespace Crow.Commands
 
                 Directory.CreateDirectory(Path.Combine(workingDirectory, "temp"));
                 logger.Log("Info", "Created a directory '.Crow/temp'");
+
+                Directory.CreateDirectory(Path.Combine(workingDirectory, "builds"));
+                logger.Log("Info", "Created a directory '.Crow/builds'");
+                
             }
             else
             {
