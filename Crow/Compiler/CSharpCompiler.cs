@@ -9,6 +9,8 @@ namespace Crow.Compiler
 {
     public class CSharpCompiler : ICompiler
     {
+        public string[] FileTypes { get; } = { ".cs" };
+        
         public event EventHandler<int> Finished;
 
         public void Compile(string output, string[] sourceFiles)

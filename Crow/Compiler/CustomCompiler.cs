@@ -7,18 +7,19 @@ namespace Crow.Compiler
 {
     public class CustomCompiler : ICompiler
     {
-        public event EventHandler<int> Finished;
-
+        public string[] FileTypes { get; }
         public char Separator { get; set; } = ' ';
+        public event EventHandler<int> Finished;
 
         private Process process = new Process();
         private string filePath;
         private string arguments;
 
-        public CustomCompiler(string filePath, string arguments)
+        public CustomCompiler(string filePath, string arguments, string[] fileTypes)
         {
             if (File.Exists(filePath))
             {
+                this.FileTypes = fileTypes;
                 this.filePath = filePath;
                 this.arguments = arguments;
 

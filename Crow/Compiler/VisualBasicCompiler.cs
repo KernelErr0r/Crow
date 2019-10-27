@@ -9,6 +9,8 @@ namespace Crow.Compiler
 {
     public class VisualBasicCompiler : ICompiler
     {
+        public string[] FileTypes { get; } = { ".vb" };
+        
         public event EventHandler<int> Finished;
 
         public void Compile(string output, string[] sourceFiles)

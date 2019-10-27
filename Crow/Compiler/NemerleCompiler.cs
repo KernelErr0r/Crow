@@ -9,6 +9,8 @@ namespace Crow.Compiler
 {
     public class NemerleCompiler : ICompiler
     {
+        public string[] FileTypes { get; } = { ".n" };
+
         public event EventHandler<int> Finished;
         
         private LogWriter logWriter = new LogWriter(new MemoryStream());
