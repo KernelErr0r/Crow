@@ -4,16 +4,15 @@ using System.IO;
 using Crow.Api;
 using Crow.Compiler;
 using Crow.Data;
+using Hjson;
+using Newtonsoft.Json;
 using Raven;
-using YamlDotNet.Serialization;
 
 namespace Crow.Commands
 {
     [Command("build", "build", "")]
     public class BuildCommand
     {
-        private Deserializer deserializer = new Deserializer();
-        
         [Default]
         public void Default()
         {
@@ -21,7 +20,8 @@ namespace Crow.Commands
             {
                 if (File.Exists(".Crow/build.crow"))
                 {
-                    var buildConfig = deserializer.Deserialize<BuildConfig>(File.ReadAllText(".Crow/build.crow"));
+                    var json = HjsonValue.Load(".Crow/build.crow").ToString();
+                    var buildConfig = JsonConvert.DeserializeObject<BuildConfig>(json);
 
                     foreach (var compiler in buildConfig.Compilers)
                     {
@@ -84,13 +84,19 @@ namespace Crow.Commands
                     if (files.Count > 0)
                     {
                         var compiler = CrowApi.CompilerManager.GetCompiler(Path.GetExtension(files[0]));
-                        var directories = Directory.GetDirectories(".Crow/builds/");
-                        var directory = "";
                         
-                        if (!Crow.Instance.GlobalConfig.StorePreviousBuilds || directories.Length == 0)
-                        {
-                            directory = ".Crow/builds/0";
+                        var version = buildConfig.Version;
+                        var id = 0;
 
+                        var directory = buildConfig.BuildPath
+                            .Replace("{VERSION}", version);
+                        var tempDirectory = directory
+                            .Replace("{ID}", $"{0}");
+
+                        if (!Crow.Instance.GlobalConfig.StorePreviousBuilds || !Directory.Exists(tempDirectory))
+                        {
+                            directory = directory.Replace("{ID}", $"{0}");
+                            
                             if (Directory.Exists(directory))
                             {
                                 Directory.Delete(directory, true);
@@ -98,18 +104,20 @@ namespace Crow.Commands
                         }
                         else
                         {
-                            int index;
+                            tempDirectory += "/../";
+                            
+                            var directories = Directory.GetDirectories(tempDirectory);
 
-                            if (Int32.TryParse(directories[^1].Split('/')[^1], out index))
+                            if (Int32.TryParse(directories[^1].Split('/')[^1], out id))
                             {
-                                directory = $".Crow/builds/{index + 1}";
+                                directory = directory.Replace("{ID}", $"{id + 1}");
                             }
                             else
                             {
                                 throw new InvalidSetupException();
                             }
                         }
-                        
+
                         Directory.CreateDirectory(directory);
                         
                         compiler.Compile($"{directory}/{buildConfig.Name}-{buildConfig.Version}.exe", files.ToArray());
