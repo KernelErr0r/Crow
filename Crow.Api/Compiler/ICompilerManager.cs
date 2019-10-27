@@ -6,6 +6,7 @@ namespace Crow.Api.Compiler
     {
         IReadOnlyList<ICompiler> Compilers { get; }
         
+        ICompiler GetCompiler(string fileType);
         void AddCompiler(ICompiler compiler);
         void RemoveCompiler(ICompiler compiler);
     }
