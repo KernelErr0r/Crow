@@ -63,7 +63,16 @@ namespace Crow.Plugins
         {
             Parallel.ForEach(plugins, async (plugin) =>
             {
-                await logger.Log(plugin.PreInit, $"Preinitializing {plugin.Name}", $"Successfully preinitialized {plugin.Name}", $"Couldn't preinitialize {plugin.Name}"); 
+                logger.Log("Info", $"Preinitializing {plugin.Name}");
+                
+                if (plugin.PreInit())
+                {
+                    logger.Log("Success", $"Successfully preinitialized {plugin.Name}");
+                }
+                else
+                {
+                    logger.Log("Error", $"Couldn't preinitialize {plugin.Name}");
+                }
             });
         }
         
@@ -71,9 +80,16 @@ namespace Crow.Plugins
         {
             Parallel.ForEach(plugins, async (plugin) =>
             {
-                plugin.Init();
+                logger.Log("Info", $"Initializing {plugin.Name}");
                 
-                //await logger.Log(plugin.Init, $"Initializing {plugin.Name}", $"Successfully initialized {plugin.Name}", $"Couldn't initialize {plugin.Name}");
+                if (plugin.Init())
+                {
+                    logger.Log("Success", $"Successfully initialized {plugin.Name}");
+                }
+                else
+                {
+                    logger.Log("Error", $"Couldn't initialize {plugin.Name}");
+                }
             });
         }
     }
