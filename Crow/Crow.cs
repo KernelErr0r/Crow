@@ -46,11 +46,12 @@ namespace Crow
 
         public void Initialize()
         {
+            pluginManager.LoadPlugins();
+            pluginManager.PreInitializePlugins();
             InitializeDirectories();
             InitializeConfigs();
-            pluginManager.LoadPlugins();
-            pluginManager.InitializePlugins();
             RegisterCommands();
+            pluginManager.InitializePlugins();
         }
 
         public void Start(string[] args)

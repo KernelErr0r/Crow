@@ -35,15 +35,17 @@ namespace Crow.Plugins
                 }
             });
         }
-        
-        public void InitializePlugins()
+
+        public void PreInitializePlugins()
         {
             Parallel.ForEach(plugins, async (plugin) =>
             {
                 await logger.Log(plugin.PreInit, $"Preinitializing {plugin.Name}", $"Successfully preinitialized {plugin.Name}", $"Couldn't preinitialize {plugin.Name}"); 
             });
-
-            
+        }
+        
+        public void InitializePlugins()
+        {
             Parallel.ForEach(plugins, async (plugin) =>
             {
                 await logger.Log(plugin.Init, $"Initializing {plugin.Name}", $"Successfully initialized {plugin.Name}", $"Couldn't initialize {plugin.Name}");
