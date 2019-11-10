@@ -1,14 +1,11 @@
 ﻿using Crow.Commands;
-using Crow.Dependencies;
-using Crow.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Crow.Api;
+using Autofac;
 using Crow.Api.Compiler;
-using Crow.Compiler;
 using Crow.Data;
 using Crow.Plugins;
 using Hjson;
@@ -22,8 +19,8 @@ namespace Crow
     {
         public static Crow Instance { get; private set; }
 
-        public GlobalConfig GlobalConfig { get; private set; }
-        
+        public GlobalConfig GlobalConfig { get; set; }
+
         public string MainDirectory { get; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName);
         public string PluginsDirectory { get; private set; }
         public string LibrariesDirectory { get; private set; }
@@ -35,13 +32,21 @@ namespace Crow
 
         private List<Tuple<ICompiler, string>> compilers = new List<Tuple<ICompiler, string>>();
 
-        public Crow()
+        private IContainer container;
+        private ICommandManager commandManager;
+
+        public Crow(IContainer container, ICommandManager commandManager)
         {
             Instance = this;
 
+            this.container = container;
+            this.commandManager = commandManager;
+        }
+
+        public void Initialize()
+        {
             InitializeDirectories();
             InitializeConfigs();
-            InitializeApi();
             pluginManager.LoadPlugins();
             pluginManager.InitializePlugins();
             RegisterCommands();
@@ -53,7 +58,8 @@ namespace Crow
             {
                 if (args.Length > 0)
                 {
-                    CrowApi.CommandManager.Invoke(args[0], args.Length == 1 ? new string[0] : args.Skip(1).ToArray());
+                    //CrowApi.CommandManager.Invoke(args[0], args.Length == 1 ? new string[0] : args.Skip(1).ToArray());
+                    commandManager.Invoke(args[0], args.Length == 1 ? new string[0] : args.Skip(1).ToArray());
                 }
                 else
                 {
@@ -107,19 +113,11 @@ namespace Crow
             GlobalConfig = JsonConvert.DeserializeObject<GlobalConfig>(json);
         }
 
-        private void InitializeApi()
-        {
-            CrowApi.CommandManager = new CommandManager();
-            CrowApi.CompilerManager = new CompilerManager();
-            CrowApi.DependencyManager = new DependencyManager();
-            CrowApi.RepositoryManager = new RepositoryManager();
-        }
-        
         private void RegisterCommands()
         {
-            CrowApi.CommandManager.RegisterCommand(new InteractiveCommand());
-            CrowApi.CommandManager.RegisterCommand(new SetupCommand());
-            CrowApi.CommandManager.RegisterCommand(new BuildCommand());
+            commandManager.RegisterCommand(container.Resolve<InteractiveCommand>());
+            commandManager.RegisterCommand(container.Resolve<BuildCommand>());
+            commandManager.RegisterCommand(new SetupCommand());
         }
     }
 }

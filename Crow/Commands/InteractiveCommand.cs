@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Crow.Api;
 using Raven;
 
 namespace Crow.Commands
@@ -8,6 +7,13 @@ namespace Crow.Commands
     [Command("interactive", "interactive", "")]
     public class InteractiveCommand
     {
+        private ICommandManager commandManager;
+    
+        public InteractiveCommand(ICommandManager commandManager)
+        {
+            this.commandManager = commandManager;
+        }
+        
         [Default]
         public void Default()
         {
@@ -18,7 +24,7 @@ namespace Crow.Commands
 
                 if (args.Length > 0)
                 {
-                    CrowApi.CommandManager.Invoke(args[0], args.Length == 1 ? new string[0] : args.Skip(1).ToArray());   
+                    commandManager.Invoke(args[0], args.Length == 1 ? new string[0] : args.Skip(1).ToArray());   
                 }
             }
         }

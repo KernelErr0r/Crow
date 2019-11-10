@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Crow.Api;
+using Crow.Api.Compiler;
 using Crow.Compiler;
 using Crow.Data;
 using Hjson;
@@ -13,6 +13,13 @@ namespace Crow.Commands
     [Command("build", "build", "")]
     public class BuildCommand
     {
+        private ICompilerManager compilerManager;
+    
+        public BuildCommand(ICompilerManager compilerManager)
+        {
+            this.compilerManager = compilerManager;
+        }
+    
         [Default]
         public void Default()
         {
@@ -67,7 +74,7 @@ namespace Crow.Commands
                         if (compiler.FileTypes.Length == 0)
                             throw new ArgumentException("FileTypes");
                         
-                        CrowApi.CompilerManager.AddCompiler(new CustomCompiler(compilerExecutable, compiler.Arguments, compiler.FileTypes));
+                        compilerManager.AddCompiler(new CustomCompiler(compilerExecutable, compiler.Arguments, compiler.FileTypes));
                     }
 
                     var files = new List<string>();
@@ -75,7 +82,7 @@ namespace Crow.Commands
                     //TODO
                     foreach (var file in Directory.GetFiles(Environment.CurrentDirectory))
                     {
-                        if (CrowApi.CompilerManager.GetCompiler(Path.GetExtension(file)) is { })
+                        if (compilerManager.GetCompiler(Path.GetExtension(file)) is { })
                         {
                             files.Add(file);
                         }
@@ -83,7 +90,7 @@ namespace Crow.Commands
 
                     if (files.Count > 0)
                     {
-                        var compiler = CrowApi.CompilerManager.GetCompiler(Path.GetExtension(files[0]));
+                        var compiler = compilerManager.GetCompiler(Path.GetExtension(files[0]));
                         
                         var version = buildConfig.Version;
                         var id = 0;
