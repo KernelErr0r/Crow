@@ -30,10 +30,30 @@ namespace Crow.Plugins
                             var plugin = Activator.CreateInstance(type) as IPlugin;
                         
                             plugins.Add(plugin);
+
+                            return;
                         }
-                    }   
+                    }
+
+                    throw new InvalidPluginException();
                 }
             });
+        }
+
+        public void LoadPlugin(object obj)
+        {
+            var type = obj.GetType();
+            
+            if (type.GetInterface("IPlugin") != null)
+            {
+                var plugin = Activator.CreateInstance(type) as IPlugin;
+                        
+                plugins.Add(plugin);
+            }
+            else
+            {
+                throw new InvalidPluginException();
+            }
         }
 
         public void PreInitializePlugins()
