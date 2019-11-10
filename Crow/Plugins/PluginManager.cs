@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Crow.Api.Plugins;
@@ -9,6 +10,8 @@ namespace Crow.Plugins
 {
     public class PluginManager
     {
+        public IReadOnlyList<IPlugin> Plugins => plugins.ToArray();
+
         private readonly ConcurrentBag<IPlugin> plugins = new ConcurrentBag<IPlugin>();
         private readonly Logger logger = new Logger("PluginManager");
         
@@ -68,7 +71,9 @@ namespace Crow.Plugins
         {
             Parallel.ForEach(plugins, async (plugin) =>
             {
-                await logger.Log(plugin.Init, $"Initializing {plugin.Name}", $"Successfully initialized {plugin.Name}", $"Couldn't initialize {plugin.Name}");
+                plugin.Init();
+                
+                //await logger.Log(plugin.Init, $"Initializing {plugin.Name}", $"Successfully initialized {plugin.Name}", $"Couldn't initialize {plugin.Name}");
             });
         }
     }
