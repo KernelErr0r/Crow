@@ -4,6 +4,7 @@ using System.IO;
 using Crow.Api.Compiler;
 using Crow.Compiler;
 using Crow.Data;
+using Crow.Data.Configs;
 using Hjson;
 using Newtonsoft.Json;
 using Raven;

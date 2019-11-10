@@ -8,6 +8,7 @@ using Autofac;
 using Crow.Api.Compiler;
 using Crow.Api.Configs;
 using Crow.Data;
+using Crow.Data.Configs;
 using Crow.Plugins;
 using Raven;
 using Salem;

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Crow.Data
+namespace Crow.Data.Configs
 {
     [Serializable]
     public struct GlobalConfig
