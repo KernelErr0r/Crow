@@ -6,10 +6,9 @@ using System.IO;
 using System.Linq;
 using Autofac;
 using Crow.Api.Compiler;
+using Crow.Api.Configs;
 using Crow.Data;
 using Crow.Plugins;
-using Hjson;
-using Newtonsoft.Json;
 using Raven;
 using Salem;
 
@@ -34,13 +33,15 @@ namespace Crow
 
         private IContainer container;
         private ICommandManager commandManager;
+        private IConfigManager configManager;
 
-        public Crow(IContainer container, ICommandManager commandManager)
+        public Crow(IContainer container, ICommandManager commandManager, IConfigManager configManager)
         {
             Instance = this;
 
             this.container = container;
             this.commandManager = commandManager;
+            this.configManager = configManager;
         }
 
         public void Initialize()
@@ -95,22 +96,15 @@ namespace Crow
         private void InitializeConfigs()
         {
             var globalConfigFile = Path.Combine(ConfigsDirectory, "global.hjson");
-
-            string json;
-            string hjson;
             
             if (!File.Exists(globalConfigFile))
             {
-                json = JsonConvert.SerializeObject(new GlobalConfig(), Formatting.Indented);
-                hjson = JsonValue.Parse(json).ToString(Stringify.Hjson);
-                
-                File.WriteAllText(globalConfigFile, hjson);
+                configManager.SaveDefault<GlobalConfig>(globalConfigFile);
             }
 
-            hjson = File.ReadAllText(globalConfigFile);
-            json = HjsonValue.Parse(hjson).ToString();
+            configManager.Load<GlobalConfig>("global", globalConfigFile);
 
-            GlobalConfig = JsonConvert.DeserializeObject<GlobalConfig>(json);
+            GlobalConfig = configManager.Get<GlobalConfig>("global");
         }
 
         private void RegisterCommands()
