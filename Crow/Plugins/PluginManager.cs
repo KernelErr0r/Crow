@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Crow.Api.Plugins;
+using Crow.Api.Plugins.Events;
+using Redbus.Interfaces;
 using Salem;
 
 namespace Crow.Plugins
@@ -14,6 +16,13 @@ namespace Crow.Plugins
 
         private readonly ConcurrentBag<IPlugin> plugins = new ConcurrentBag<IPlugin>();
         private readonly Logger logger = new Logger("PluginManager");
+        
+        private IEventBus eventBus;
+
+        public PluginManager(IEventBus eventBus)
+        {
+            this.eventBus = eventBus;
+        }
         
         public void LoadPlugins()
         {
@@ -33,6 +42,8 @@ namespace Crow.Plugins
                             var plugin = Activator.CreateInstance(type) as IPlugin;
                         
                             plugins.Add(plugin);
+                            eventBus.SubscribeAll(type, plugin);
+                            eventBus.Publish(new PluginLoadedEvent(plugin));
 
                             return;
                         }
@@ -52,6 +63,8 @@ namespace Crow.Plugins
                 var plugin = Activator.CreateInstance(type) as IPlugin;
                         
                 plugins.Add(plugin);
+                eventBus.SubscribeAll(type, plugin);
+                eventBus.Publish(new PluginLoadedEvent(plugin));
             }
             else
             {
@@ -73,6 +86,8 @@ namespace Crow.Plugins
                 {
                     logger.Log("Error", $"Couldn't preinitialize {plugin.Name}");
                 }
+                
+                eventBus.Publish(new PluginPreInitializedEvent(plugin));
             });
         }
         
@@ -90,6 +105,8 @@ namespace Crow.Plugins
                 {
                     logger.Log("Error", $"Couldn't initialize {plugin.Name}");
                 }
+                
+                eventBus.Publish(new PluginInitializedEvent(plugin));
             });
         }
     }
