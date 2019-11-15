@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <PackageReference Include="Raven" Version="1.0.0" />
+      <PackageReference Include="Redbus" Version="1.0.8" />
     </ItemGroup>
 
 </Project>

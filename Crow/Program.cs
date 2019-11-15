@@ -9,6 +9,8 @@ using Crow.Configs;
 using Crow.Dependencies;
 using Crow.Repositories;
 using Raven;
+using Redbus;
+using Redbus.Interfaces;
 
 namespace Crow
 {
@@ -34,6 +36,9 @@ namespace Crow
                     .SingleInstance();
             builder.RegisterType<RepositoryManager>()
                     .As<IRepositoryManager>()
+                    .SingleInstance();
+            builder.RegisterType<EventBus>()
+                    .As<IEventBus>()
                     .SingleInstance();
             
             builder.RegisterType<Crow>()
