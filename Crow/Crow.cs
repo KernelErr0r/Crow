@@ -7,6 +7,7 @@ using System.Linq;
 using Autofac;
 using Crow.Api.Compiler;
 using Crow.Api.Configs;
+using Crow.Api.Plugins;
 using Crow.Data;
 using Crow.Data.Configs;
 using Crow.Plugins;
@@ -28,20 +29,21 @@ namespace Crow
         public string TemplatesDirectory { get; private set; }
 
         private readonly Logger logger = new Logger("Crow");
-        private readonly PluginManager pluginManager = new PluginManager();
 
         private List<Tuple<ICompiler, string>> compilers = new List<Tuple<ICompiler, string>>();
 
         private IContainer container;
         private ICommandManager commandManager;
+        private IPluginManager pluginManager;
         private IConfigManager configManager;
 
-        public Crow(IContainer container, ICommandManager commandManager, IConfigManager configManager)
+        public Crow(IContainer container, ICommandManager commandManager, IPluginManager pluginManager, IConfigManager configManager)
         {
             Instance = this;
 
             this.container = container;
             this.commandManager = commandManager;
+            this.pluginManager = pluginManager;
             this.configManager = configManager;
         }
 

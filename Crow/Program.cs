@@ -2,11 +2,13 @@
 using Crow.Api.Compiler;
 using Crow.Api.Configs;
 using Crow.Api.Dependencies;
+using Crow.Api.Plugins;
 using Crow.Api.Repositories;
 using Crow.Commands;
 using Crow.Compiler;
 using Crow.Configs;
 using Crow.Dependencies;
+using Crow.Plugins;
 using Crow.Repositories;
 using Raven;
 using Redbus;
@@ -24,6 +26,9 @@ namespace Crow
             
             builder.RegisterType<CommandManager>()
                     .As<ICommandManager>()
+                    .SingleInstance();
+            builder.RegisterType<PluginManager>()
+                    .As<IPluginManager>()
                     .SingleInstance();
             builder.RegisterType<ConfigManager>()
                     .As<IConfigManager>()
