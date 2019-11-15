@@ -1,4 +1,5 @@
 using Crow.Plugins;
+using Redbus;
 using Xunit;
 
 namespace Crow.Tests
@@ -8,7 +9,7 @@ namespace Crow.Tests
         [Fact]
         public void TestLoading()
         {
-            var pluginManager = new PluginManager();
+            var pluginManager = new PluginManager(new EventBus());
             var testPlugin = new TestPlugin();
             
             pluginManager.LoadPlugin(testPlugin);
@@ -19,7 +20,7 @@ namespace Crow.Tests
         [Fact]
         public void TestInitialization()
         {
-            var pluginManager = new PluginManager();
+            var pluginManager = new PluginManager(new EventBus());
             var testPlugin = new TestPlugin();
             
             pluginManager.LoadPlugin(testPlugin);
@@ -33,7 +34,7 @@ namespace Crow.Tests
         [Fact]
         public void TestPreInitialization()
         {
-            var pluginManager = new PluginManager();
+            var pluginManager = new PluginManager(new EventBus());
             var testPlugin = new TestPlugin();
             
             pluginManager.LoadPlugin(testPlugin);
