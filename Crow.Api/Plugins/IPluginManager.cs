@@ -7,6 +7,8 @@ namespace Crow.Api.Plugins
         IReadOnlyList<IPlugin> Plugins { get; }
     
         void LoadPlugins();
+        void LoadPlugin(object obj);
         void InitializePlugins();
+        void PreInitializePlugins();
     }
 }
