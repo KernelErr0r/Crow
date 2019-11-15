@@ -10,7 +10,7 @@ using Salem;
 
 namespace Crow.Plugins
 {
-    public class PluginManager
+    public class PluginManager : IPluginManager
     {
         public IReadOnlyList<IPlugin> Plugins => plugins.ToArray();
 
