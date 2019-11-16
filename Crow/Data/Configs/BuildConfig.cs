@@ -1,21 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace Crow.Data.Configs
 {
     [Serializable]
     public struct BuildConfig
     {
-        [DefaultValue("Awesome project")]
+        [JsonProperty("name"), DefaultValue("Awesome_project")]
         public string Name { get; set; }
-        [DefaultValue("1.0.0")]
+        [JsonProperty("version"), DefaultValue("1.0.0")]
         public string Version { get; set; }
-        [DefaultValue(".Crow/builds/{VERSION}/{ID}")]
+        [JsonProperty("build-path"), DefaultValue(".Crow/builds/{VERSION}/{ID}")]
         public string BuildPath { get; set; }
+        [JsonProperty("compiler"), DefaultValue("Custom")]
+        public string Compiler { get; set; }
         
-        public List<Compiler> Compilers { get; set; }
+        [JsonProperty("custom-compiler")]
+        public Compiler CustomCompiler { get; set; }
+        [JsonProperty("repositories")]
         public List<Repository> Repositories { get; set; }
+        [JsonProperty("dependencies")]
         public List<Dependency> Dependencies { get; set; }
     }
 }
