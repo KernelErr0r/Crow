@@ -4,6 +4,6 @@ namespace Crow.Api.Plugins.Events
 {
     public class PluginEvent : EventBase
     {
-        public IPlugin Plugin { get; protected set; }
+        public Plugin Plugin { get; protected set; }
     }
 }

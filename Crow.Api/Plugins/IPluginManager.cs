@@ -4,7 +4,7 @@ namespace Crow.Api.Plugins
 {
     public interface IPluginManager
     {
-        IReadOnlyList<IPlugin> Plugins { get; }
+        IReadOnlyList<Plugin> Plugins { get; }
     
         void LoadPlugins();
         void LoadPlugin(object obj);

@@ -2,7 +2,7 @@ namespace Crow.Api.Plugins.Events
 {
     public class PluginInitializedEvent : PluginEvent
     {
-        public PluginInitializedEvent(IPlugin plugin)
+        public PluginInitializedEvent(Plugin plugin)
         {
             Plugin = plugin;
         }

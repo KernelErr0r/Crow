@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Crow.Api.Plugins;
 using Crow.Api.Plugins.Events;
@@ -12,9 +14,9 @@ namespace Crow.Plugins
 {
     public class PluginManager : IPluginManager
     {
-        public IReadOnlyList<IPlugin> Plugins => plugins.ToArray();
+        public IReadOnlyList<Plugin> Plugins => plugins.ToArray();
 
-        private readonly ConcurrentBag<IPlugin> plugins = new ConcurrentBag<IPlugin>();
+        private readonly ConcurrentBag<Plugin> plugins = new ConcurrentBag<Plugin>();
         private readonly Logger logger = new Logger("PluginManager");
         
         private IEventBus eventBus;
@@ -35,21 +37,19 @@ namespace Crow.Plugins
                     var rawAssembly = File.ReadAllBytes(file);
                     var assembly = AppDomain.CurrentDomain.Load(rawAssembly);
 
-                    foreach (var type in assembly.GetTypes())
+                    var pluginTypes = assembly.GetTypes().Where(type => type.GetCustomAttribute<PluginAttribute>() is { });
+
+                    if (pluginTypes.Count() == 1)
                     {
-                        if (type.GetInterface("IPlugin") != null)
-                        {
-                            var plugin = Activator.CreateInstance(type) as IPlugin;
-                        
-                            plugins.Add(plugin);
-                            eventBus.SubscribeAll(type, plugin);
-                            eventBus.Publish(new PluginLoadedEvent(plugin));
+                        var pluginType = pluginTypes.First();
+                        var attribute = pluginType.GetCustomAttribute<PluginAttribute>();
 
-                            return;
-                        }
+                        LoadPluginInternal(pluginType, attribute);
                     }
-
-                    throw new InvalidPluginException();
+                    else
+                    {
+                        throw new InvalidPluginException();
+                    }
                 }
             });
         }
@@ -57,14 +57,10 @@ namespace Crow.Plugins
         public void LoadPlugin(object obj)
         {
             var type = obj.GetType();
-            
-            if (type.GetInterface("IPlugin") != null)
+
+            if (type.GetCustomAttribute<PluginAttribute>() is { } attribute)
             {
-                var plugin = Activator.CreateInstance(type) as IPlugin;
-                        
-                plugins.Add(plugin);
-                eventBus.SubscribeAll(type, plugin);
-                eventBus.Publish(new PluginLoadedEvent(plugin));
+                LoadPluginInternal(type, attribute);
             }
             else
             {
@@ -76,15 +72,15 @@ namespace Crow.Plugins
         {
             Parallel.ForEach(plugins, async (plugin) =>
             {
-                logger.Log("Info", $"Preinitializing {plugin.Name}");
+                logger.Log("Info", $"Preinitializing {plugin.Attribute.Name}");
                 
-                if (plugin.PreInit())
+                if (plugin.Instance.PreInit())
                 {
-                    logger.Log("Success", $"Successfully preinitialized {plugin.Name}");
+                    logger.Log("Success", $"Successfully preinitialized {plugin.Attribute.Name}");
                 }
                 else
                 {
-                    logger.Log("Error", $"Couldn't preinitialize {plugin.Name}");
+                    logger.Log("Error", $"Couldn't preinitialize {plugin.Attribute.Name}");
                 }
                 
                 eventBus.Publish(new PluginPreInitializedEvent(plugin));
@@ -95,19 +91,29 @@ namespace Crow.Plugins
         {
             Parallel.ForEach(plugins, async (plugin) =>
             {
-                logger.Log("Info", $"Initializing {plugin.Name}");
+                logger.Log("Info", $"Initializing {plugin.Attribute.Name}");
                 
-                if (plugin.Init())
+                if (plugin.Instance.Init())
                 {
-                    logger.Log("Success", $"Successfully initialized {plugin.Name}");
+                    logger.Log("Success", $"Successfully initialized {plugin.Attribute.Name}");
                 }
                 else
                 {
-                    logger.Log("Error", $"Couldn't initialize {plugin.Name}");
+                    logger.Log("Error", $"Couldn't initialize {plugin.Attribute.Name}");
                 }
                 
                 eventBus.Publish(new PluginInitializedEvent(plugin));
             });
+        }
+
+        private void LoadPluginInternal(Type type, PluginAttribute attribute)
+        {
+            var instance = Activator.CreateInstance(type) as IPlugin;
+            var plugin = new Plugin(instance, attribute);
+
+            plugins.Add(plugin);
+            eventBus.SubscribeAll(type, plugin);
+            eventBus.Publish(new PluginLoadedEvent(plugin));
         }
     }
 }
